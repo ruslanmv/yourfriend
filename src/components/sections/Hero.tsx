@@ -16,7 +16,7 @@ export function Hero({ theme, onPreview }: { theme: Theme; onDemo: () => void; o
         <div className="hero__actions"><a className="button button--primary" href={site.appUrl} target="_blank" rel="noopener noreferrer"><span>Meet Your Friend</span><span aria-hidden="true">→</span></a><Button onClick={onPreview} variant="secondary" icon="play">Watch Preview</Button></div>
         <p className="hero__trust">◌&nbsp; Real-time conversation. Natural. Private. Always on your side.</p>
       </div>
-      <HeroAvatar/>
+      <HeroAvatar theme={theme}/>
     </div>
   </section>;
 }

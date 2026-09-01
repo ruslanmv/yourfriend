@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-labelledby="title desc">
+  <title id="title">YourFriend — AI companionship with real presence</title>
+  <desc id="desc">A serene ocean horizon with the YourFriend brand and product positioning.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eef5ff"/><stop offset=".46" stop-color="#f7efff"/><stop offset="1" stop-color="#ffe9cf"/></linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9db9dd" stop-opacity=".58"/><stop offset="1" stop-color="#566f9c" stop-opacity=".88"/></linearGradient>
+    <radialGradient id="sun"><stop stop-color="#fff"/><stop offset=".35" stop-color="#ffd994"/><stop offset="1" stop-color="#ffd994" stop-opacity="0"/></radialGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="20"/></filter>
+  </defs>
+  <rect width="1200" height="420" rx="32" fill="url(#sky)"/>
+  <circle cx="955" cy="125" r="110" fill="url(#sun)" filter="url(#blur)"/>
+  <path d="M0 250C170 225 325 270 500 245S855 220 1200 246V420H0Z" fill="url(#sea)"/>
+  <path d="M0 280C240 260 340 305 570 278S950 250 1200 284" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/>
+  <path d="M0 318C220 298 370 343 610 314S950 294 1200 320" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2"/>
+  <g transform="translate(72 68)">
+    <circle cx="24" cy="24" r="20" fill="none" stroke="#7188c8" stroke-width="6"/><path d="M11 35A20 20 0 0 1 33 6" fill="none" stroke="#e7ad62" stroke-width="6" stroke-linecap="round"/>
+    <text x="58" y="34" fill="#203250" font-family="Georgia,serif" font-size="31">YourFriend</text>
+    <text x="0" y="112" fill="#172943" font-family="Georgia,serif" font-size="58">AI companionship,</text>
+    <text x="0" y="174" fill="#667fc5" font-family="Georgia,serif" font-size="58" font-style="italic">with real presence.</text>
+    <text x="2" y="221" fill="#40526d" font-family="Arial,sans-serif" font-size="18">A voice-first 3D companion for screen, desktop, VR, AR,</text>
+    <text x="2" y="250" fill="#40526d" font-family="Arial,sans-serif" font-size="18">and the everyday moments between.</text>
+  </g>
+  <g transform="translate(900 206)" opacity=".9">
+    <circle cx="76" cy="76" r="75" fill="#fff" fill-opacity=".2" stroke="#fff" stroke-opacity=".65"/>
+    <circle cx="76" cy="76" r="52" fill="none" stroke="#b7c8e8" stroke-width="2"/><circle cx="76" cy="76" r="7" fill="#f4bb70"/>
+    <path d="M76 19C109 33 126 55 133 76M76 133C43 120 25 99 19 76" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>
