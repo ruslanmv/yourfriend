@@ -1,187 +1,402 @@
-# YourFriend.Online
+<div align="center">
+  <img src="docs/readme/hero-banner.svg" width="100%" alt="YourFriend — AI companionship with real presence" />
 
-A production-oriented, frontend-only commercial landing site for **YourFriend**. The design is intentionally calm, positive, premium, and meditation-adjacent rather than dark SaaS/cyberpunk. It supports paired light/dark ambient environments, very slow hero rotation, optional live VRM rendering, responsive layouts, reduced-motion behavior, a demo-request flow, legal routes, and deployable static output.
+  <br />
 
-## What is included
+  <strong>Premium commercial website for the YourFriend embodied AI companion.</strong><br />
+  A calm, accessible acquisition experience that introduces the product and sends visitors to the live application.
 
-- React + Vite + TypeScript
-- Light / dark / system theme control
-- **Slow ambient scene slider** with five paired environments
-- Clickable scene thumbnails and persistent **“Ambient scenes rotate slowly”** label
-- Independent avatar layer (background and avatar do not rotate together)
-- Optional Three.js + `@pixiv/three-vrm` live avatar renderer
-- Commercial sections: Experiences, Presence, Privacy, Ambient Motion, final CTA
-- Frontend-only demo form with optional endpoint or `mailto:` fallback
-- Responsive mobile/tablet/desktop layout
-- `prefers-reduced-motion` support
-- Basic legal placeholders and SPA routing
-- Vitest smoke tests
-- Static deployment files (`_redirects`, robots, sitemap)
+  <br /><br />
 
-## Important: production media
+  [![React](https://img.shields.io/badge/React-19-6179b8?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-4569a5?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Vite](https://img.shields.io/badge/Vite-7.3-8c72c8?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
+  [![Tests](https://img.shields.io/badge/Vitest-tested-76a98f?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
+  [![License](https://img.shields.io/badge/license-not%20specified-b5a078?style=flat-square)](#licensing)
 
-This repository deliberately does **not** ship a third-party VRoid model, paid fonts, product footage, or AI-generated final commercial background art. It includes clean SVG scene placeholders so the site runs immediately.
+  <br />
 
-Replace these with your licensed production assets:
+  [**Open YourFriend →**](https://www.yourfriend.online/) · [Product architecture](#product-architecture) · [Run locally](#quick-start) · [Deploy](#deployment)
+</div>
+
+---
+
+## Overview
+
+**YourFriend** is positioned as AI companionship with real presence: a voice-first, embodied companion designed for screen-aware assistance, shared media, gaming, desktop, VR, and AR experiences.
+
+This repository contains the **public commercial website**, not the interactive YourFriend application. It is the product presentation, trust, and acquisition layer. Every primary conversion path leads to the separately operated application at [`https://www.yourfriend.online/`](https://www.yourfriend.online/).
+
+### Product promise
+
+> **AI companionship, with real presence.**<br />
+> Thoughtful when it helps. Quiet when it should be. Present across the experiences that matter.
+
+| Experience | Commercial story |
+|---|---|
+| **Watch Together** | Share shows, movies, and videos with a companion that stays in the moment. |
+| **Screen Copilot** | Explain, summarize, plan, and work together without turning the screen into a dashboard. |
+| **Gaming Co-host** | Context-aware strategy, reactions, and calm companionship during play. |
+| **Embodied HomePilot** | Present agent capabilities through a character-led interface for the environment. |
+
+> [!IMPORTANT]
+> Product and privacy statements on this website are intentionally restrained. Before a commercial launch, validate all claims against the deployed application and have final privacy and legal copy reviewed by qualified counsel.
+
+## Product architecture
+
+The marketing website and application are deliberately separate concerns:
+
+<p align="center">
+  <img src="docs/readme/product-flow.svg" width="100%" alt="Visitors move from the public marketing website through a primary CTA to the separate YourFriend application" />
+</p>
 
 ```text
-public/ambient/light/
-public/ambient/dark/
+PUBLIC COMMERCIAL WEBSITE
+GitHub Pages · Vercel · static hosting
+        ↓
+Premium product presentation
+        ↓
+Meet Your Friend / Open YourFriend
+        ↓
+https://www.yourfriend.online/
+        ↓
+INTERACTIVE YOURFRIEND APPLICATION
+```
+
+The marketing frontend does **not** implement authentication, chat, LLM calls, voice recognition, screen capture, memory storage, or HomePilot execution. This separation keeps the public surface fast, cacheable, secure by simplicity, and independently deployable.
+
+## Experience design
+
+The site avoids conventional SaaS-dashboard and cyberpunk patterns. Its visual system combines warm daylight, peaceful evening palettes, measured typography, ambient scenery, and restrained movement.
+
+### Included
+
+- Responsive React, Vite, and TypeScript frontend
+- Light, dark, and system themes with persistent user preference
+- Five paired light/dark ambient environments
+- Slow 24–28 second scene rotation with 3.4–3.8 second opacity crossfades
+- Static-first companion presentation with optional, lazy VRM enhancement
+- Experiences, presence, privacy, ambient motion, and conversion sections
+- Keyboard-accessible navigation, visible focus states, and semantic controls
+- `prefers-reduced-motion` behavior and hidden-tab animation suspension
+- Frontend-only preview and demo-request flows
+- SEO, OpenGraph, Twitter Card, robots, sitemap, manifest, and canonical metadata
+- SPA routing and deployment configurations for Vercel and GitHub Pages
+- Vitest component and behavior coverage
+
+## Static-first companion
+
+The commercial hero treats the polished static render as the default product experience. Live 3D is a progressive enhancement, never a prerequisite.
+
+<p align="center">
+  <img src="docs/readme/hero-layers.svg" width="100%" alt="The hero uses independent ambient, overlay, poster, optional VRM, and HTML interface layers" />
+</p>
+
+### Runtime sequence
+
+1. Semantic HTML and the first ambient environment render.
+2. The theme-aware companion poster paints immediately.
+3. Navigation, content, and CTAs are fully usable.
+4. On an eligible device, the browser requests the Three.js/VRM chunk during idle time.
+5. The poster crossfades only after a valid VRM renders its first frame.
+6. Any model, WebGL, or network failure leaves the poster unchanged.
+
+Live VRM eligibility requires all of the following:
+
+- `VITE_ENABLE_LIVE_VRM=true`
+- WebGL2 without a major performance caveat
+- reduced motion is not requested
+- sufficient logical processors and device memory when reported
+- a non-mobile/coarse-pointer environment
+- a visible hero and visible browser tab
+
+Rendering is capped at 24–30 FPS with a bounded device-pixel ratio. Offscreen and hidden-tab rendering pauses to reduce battery, GPU, and thermal cost.
+
+### Avatar configuration
+
+All model, poster, timing, and performance values are centralized in:
+
+```text
+src/config/avatar.ts
+```
+
+The optional licensed model belongs at:
+
+```text
 public/avatar/models/companion.vrm
-public/avatar/animations/
-public/preview/
-public/social/
 ```
 
-The background images must contain **environment only** — no character, text, UI, logo, or baked buttons. The live/avatar layer is separate.
-
-## Ambient scene design
-
-The default slider order is:
-
-1. Ocean
-2. Mountain lake
-3. Meditation garden
-4. Coastal terrace
-5. Open sky
-
-Each scene has a light and dark pair. Automatic rotation is intentionally slow (24–28 seconds) with 3.4–3.8 second crossfades. User interaction pauses automatic rotation temporarily. Automatic changes stop for reduced-motion users and when the page is hidden.
-
-Edit all scene assets/timing in:
+Launch posters live at:
 
 ```text
-src/config/ambientScenes.ts
+public/avatar/posters/
+├── companion-light.svg
+└── companion-dark.svg
 ```
 
-To move from SVG placeholders to WebP/AVIF, only update those image paths.
+For the canonical production character, replace these launch assets with transparent AVIF/WebP renders derived from the same commercially licensed VRM. Keep the poster permanently—even after live 3D ships—for first paint, reduced motion, mobile devices, slow networks, screenshots, and WebGL failure recovery.
 
-## Local development
+> [!NOTE]
+> The repository does not currently include a licensed production VRM. With live VRM disabled—the default—the website remains complete and usable.
+
+## Ambient scene system
+
+Ambient environments remain independent of the companion layer. The character does not rotate with the background.
+
+| Order | Scene | Light | Dark | Duration | Crossfade |
+|---:|---|---|---|---:|---:|
+| 01 | Ocean | Sunrise | Moonlight | 24 s | 3.4 s |
+| 02 | Mountain lake | Morning | Night | 26 s | 3.6 s |
+| 03 | Meditation garden | Day | Night | 28 s | 3.8 s |
+| 04 | Coastal terrace | Morning | Twilight | 25 s | 3.4 s |
+| 05 | Open sky | Pastel sky | Starlight | 27 s | 3.6 s |
+
+Configuration lives in [`src/config/ambientScenes.ts`](src/config/ambientScenes.ts). Runtime assets live below `public/ambient/light/` and `public/ambient/dark/`; source and art-direction references remain preserved under `docs/reference-images/`.
+
+### Add an ambient scene
+
+1. Export paired, environment-only light and dark images as optimized WebP or AVIF.
+2. Place them in `public/ambient/light/` and `public/ambient/dark/`.
+3. Add a matching entry to `ambientScenes`:
+
+```ts
+{
+  id: 'new-scene',
+  label: 'New scene',
+  lightImage: asset('ambient/light/new-scene.webp'),
+  darkImage: asset('ambient/dark/new-scene.webp'),
+  duration: 26000,
+  transitionDuration: 3600,
+  focalPoint: 'center',
+}
+```
+
+4. Verify light/dark contrast, mobile cropping, reduced motion, and the thumbnail selector.
+
+Do not bake characters, logos, interface controls, or text into rotating environment assets.
+
+## Technology
+
+| Area | Implementation |
+|---|---|
+| UI | React 19, semantic HTML, component-scoped class conventions |
+| Language | TypeScript 5.9 |
+| Tooling | Vite 7 |
+| Routing | React Router |
+| Optional 3D | Three.js and `@pixiv/three-vrm`, dynamically imported |
+| Testing | Vitest, Testing Library, jsdom |
+| Quality | ESLint, TypeScript project references |
+| Hosting | Vercel, GitHub Pages, or any static host with SPA fallback |
+
+## Repository map
+
+```text
+yourfriend/
+├── .github/workflows/pages.yml    # GitHub Pages CI/CD
+├── docs/
+│   ├── readme/                    # README SVG artwork and diagrams
+│   └── reference-images/          # Preserved art direction and source references
+├── public/
+│   ├── ambient/{light,dark}/      # Optimized rotating environments
+│   ├── avatar/
+│   │   ├── posters/               # Always-available static character path
+│   │   ├── models/                # Optional licensed companion.vrm
+│   │   └── animations/            # Optional curated VRMA clips
+│   ├── preview/                   # Product preview media
+│   ├── social/                    # OpenGraph/social assets
+│   ├── robots.txt
+│   └── sitemap.xml
+├── src/
+│   ├── components/
+│   │   ├── ambient/               # Slow scene rotation
+│   │   ├── avatar/                # Poster-first / optional live VRM controller
+│   │   ├── modals/
+│   │   ├── sections/
+│   │   └── ui/
+│   ├── config/                    # Site, avatar, and ambient configuration
+│   ├── hooks/
+│   ├── pages/
+│   └── styles/
+├── tests/
+├── index.html
+├── vercel.json
+└── vite.config.ts
+```
+
+## Quick start
+
+### Requirements
+
+- Node.js 22 recommended
+- npm 10 or newer
+
+### Install and run
 
 ```bash
+git clone https://github.com/ruslanmv/yourfriend.git
+cd yourfriend
 npm install
 cp .env.example .env
 npm run dev
 ```
 
-Build:
+Open the local URL printed by Vite, normally [`http://localhost:5173`](http://localhost:5173).
 
-```bash
-npm run build
-```
+### Commands
 
-The static site is written to `dist/`.
+| Command | Purpose |
+|---|---|
+| `npm run dev` | Start the local Vite development server |
+| `npm run build` | Type-check and create the production build in `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run typecheck` | Run TypeScript project checks |
+| `npm run lint` | Run ESLint |
+| `npm test` | Run the Vitest suite once |
 
-## Live VRM character
+## Configuration
 
-1. Put your licensed VRM in:
+Copy `.env.example` to `.env`. Never commit credentials or environment-specific secrets.
 
-```text
-public/avatar/models/companion.vrm
-```
+| Variable | Required | Default | Purpose |
+|---|:---:|---|---|
+| `VITE_APP_URL` | No | `https://www.yourfriend.online/` | Destination for primary product CTAs |
+| `VITE_ENABLE_LIVE_VRM` | No | `false` | Makes live VRM eligible; browser capability checks still apply |
+| `VITE_SALES_EMAIL` | No | `hello@yourfriend.online` | `mailto:` fallback for demo requests |
+| `VITE_DEMO_ENDPOINT` | No | empty | Optional JSON form endpoint |
+| `VITE_SITE_URL` | Production | Pages URL in `.env.production` | Canonical and social metadata origin, with trailing slash |
+| `VITE_BASE_PATH` | GitHub Pages | `/` | Vite asset and router base path |
 
-2. Set:
-
-```bash
-VITE_ENABLE_LIVE_VRM=true
-```
-
-3. Run the site.
-
-The renderer includes transparent WebGL output, ACES tone mapping, hemisphere/key/rim lighting and a restrained procedural idle. For the commercial site, use only 3–5 curated ambient VRMA clips even if the product has a much larger motion library.
-
-If the live model is disabled, the page uses the built-in stylized fallback so the layout remains complete.
-
-## Demo request
-
-Without a backend, the form uses `mailto:` to `VITE_SALES_EMAIL`.
-
-For a real form service or your own API, set:
-
-```bash
-VITE_DEMO_ENDPOINT=https://example.com/api/demo-request
-```
-
-The endpoint should accept JSON:
+If `VITE_DEMO_ENDPOINT` is configured, it must accept JSON shaped as follows:
 
 ```json
 {
-  "name": "...",
-  "email": "...",
-  "company": "...",
-  "message": "..."
+  "name": "Ada Lovelace",
+  "email": "ada@example.com",
+  "company": "Example Company",
+  "message": "We would like a product walkthrough."
 }
 ```
 
-## Commercial launch checklist
-
-Before going live:
-
-- Replace placeholder scenes with licensed final art/video.
-- Add the real VRM/VRMA assets and verify their commercial licenses.
-- Replace PreviewModal placeholder with real product footage.
-- Replace Privacy Policy and Terms with counsel-approved copy.
-- Verify every privacy/security marketing claim against actual product behavior.
-- Set real sales email and demo endpoint.
-- Replace social preview placeholder.
-- Add analytics only after consent/privacy decisions are complete.
-- Run Lighthouse and real-device performance testing.
-- Test Safari/iOS/Android, reduced-motion, keyboard navigation and WebGL failure fallback.
-
-## Why the ambient engine is frontend-only
-
-The commercial site does not need a backend to rotate environments. Scene order, light/dark assets and timings live in configuration. If you later want CMS/backend control, fetch the same scene schema at startup:
-
-```ts
-{
-  id: string;
-  label: string;
-  lightImage: string;
-  darkImage: string;
-  duration: number;
-  transitionDuration: number;
-  focalPoint?: string;
-}
-```
-
-The React component does not need to change.
+The repository does not add a marketing backend. Confirm endpoint authentication, abuse prevention, retention, and privacy behavior with the service owner before production use.
 
 ## Deployment
 
-### Cloudflare Pages / Netlify / Vercel
+### Vercel
 
-- Build command: `npm run build`
-- Output directory: `dist`
+1. Import `ruslanmv/yourfriend` into Vercel.
+2. Select the **Vite** framework preset.
+3. Use `npm run build` as the build command and `dist` as the output directory.
+4. Set `VITE_SITE_URL` to the final marketing URL, including the trailing slash.
+5. Leave `VITE_BASE_PATH` unset for a root-domain deployment.
+6. Deploy.
 
-The included `public/_redirects` supports SPA routes on compatible static hosts.
+[`vercel.json`](vercel.json) includes an SPA rewrite so legal and client-side routes work after direct navigation or refresh.
 
-### Existing server
+### GitHub Pages
 
-Serve `dist/` as static files and route unknown frontend paths back to `index.html`.
+1. Open **Settings → Pages** in the GitHub repository.
+2. Select **GitHub Actions** as the source.
+3. Push to `main` or manually run **Deploy marketing site to Pages**.
+4. The workflow tests, lints, builds, creates the SPA fallback, and publishes `dist/`.
 
-## Architecture
+Production URL:
 
 ```text
-Hero
-├── AmbientSlider     (slow environment changes)
-├── Hero wash         (text contrast)
-├── HeroAvatar        (independent live/fallback character)
-└── Hero copy/UI
-
-Page
-├── Experiences
-├── Presence philosophy
-├── Privacy
-├── Motion system
-├── Final CTA
-└── Footer
+https://ruslanmv.github.io/yourfriend/
 ```
 
-The product application and commercial website stay deliberately separate. The marketing frontend does not implement chat, LLM APIs, voice recognition, memory storage, screen capture, HomePilot execution, or account auth.
+The Pages workflow builds with:
 
+```bash
+VITE_BASE_PATH=/yourfriend/ \
+VITE_SITE_URL=https://ruslanmv.github.io/yourfriend/ \
+npm run build
+```
 
-## Design reference images
+### Custom domain
 
-All visual generations are preserved under `docs/reference-images/`: older/background-only references remain in `background-library/` for future reuse, while newer companion-integrated versions live in `companion-integrated/`. New artwork should be appended rather than replacing older assets. The actual rotating hero backgrounds used by the frontend are the optimized files in `public/ambient/light/` and `public/ambient/dark/`.
+When attaching a custom marketing domain:
 
+1. Set `VITE_SITE_URL=https://marketing.example.com/`.
+2. Set `VITE_BASE_PATH=/`.
+3. Update `public/robots.txt` and `public/sitemap.xml` to the same host.
+4. Configure the domain with the selected host.
+5. Re-run canonical, OpenGraph, route-refresh, and asset-path checks.
 
-Two additional companion-only concept artworks (light mountain interior and dark rooftop city night) were added under `docs/reference-images/companion-integrated/` and included in the ZIP.
+Do not change the application CTA destination unless the production application itself moves.
+
+## Quality and accessibility
+
+Before release, validate:
+
+- [ ] `npm install`, type checking, linting, tests, and production build pass
+- [ ] Primary header, hero, and final CTAs open `https://www.yourfriend.online/`
+- [ ] Keyboard order and visible focus states are correct
+- [ ] Light, dark, and system themes work and explicit preference persists
+- [ ] Reduced motion produces a static ambient environment and static companion
+- [ ] Hero remains complete with `VITE_ENABLE_LIVE_VRM=false`
+- [ ] WebGL and VRM failures leave the poster visible
+- [ ] Mobile, tablet, desktop, Safari/iPhone, and low-power devices are checked
+- [ ] Background transitions remain slow opacity crossfades
+- [ ] Direct navigation and refresh work on deployed legal routes
+- [ ] Canonical URL, sitemap, robots, and social image use the production host
+- [ ] Lighthouse and Core Web Vitals are measured against the deployed build
+- [ ] No secrets, unlicensed media, or unverified security claims are shipped
+
+## Commercial readiness
+
+Before a public campaign or enterprise evaluation:
+
+1. Replace launch media with licensed, optimized production assets.
+2. Add a canonical licensed VRM only after performance and identity review.
+3. Replace preview placeholders with approved product footage and captions.
+4. Obtain counsel-approved Privacy Policy and Terms of Use.
+5. Verify privacy, capture, memory, and security statements against real behavior.
+6. Connect a production demo endpoint or monitored sales mailbox.
+7. Establish analytics consent, data minimization, and retention decisions before adding telemetry.
+8. Run accessibility, device, browser, performance, and failure-mode reviews.
+9. Review incident ownership, deployment rollback, and content-approval processes.
+
+## Content and media governance
+
+- Preserve source/reference art in `docs/reference-images/`; add new work rather than deleting useful history.
+- Serve optimized assets from `public/`, not multi-megabyte source files where avoidable.
+- Keep ambient environments and the canonical companion as separate visual layers.
+- Document model, font, music, video, and image licenses before commercial publication.
+- Do not commit `.env`, API keys, credentials, private endpoints, customer data, or proprietary model files without explicit approval.
+
+## Contributing
+
+1. Create a focused branch.
+2. Keep changes additive and avoid modifying unrelated product integrations.
+3. Run the complete quality suite:
+
+```bash
+npm run typecheck
+npm run lint
+npm test
+npm run build
+```
+
+4. Include screenshots for perceptible UI changes.
+5. Explain accessibility, performance, content, and deployment implications in the pull request.
+
+## Licensing
+
+No repository-wide software or media license is currently declared. Until the owner adds explicit license terms, treat the source code, generated references, companion imagery, models, animations, video, fonts, and brand assets as **all rights reserved** and unavailable for redistribution or commercial reuse without permission.
+
+Third-party dependencies remain subject to their respective licenses.
+
+## Contact
+
+- **Product application:** [`https://www.yourfriend.online/`](https://www.yourfriend.online/)
+- **Repository:** [`https://github.com/ruslanmv/yourfriend`](https://github.com/ruslanmv/yourfriend)
+- **Commercial inquiries:** [`hello@yourfriend.online`](mailto:hello@yourfriend.online)
+
+---
+
+<div align="center">
+  <strong>YourFriend</strong><br />
+  <em>AI companionship, with real presence.</em><br /><br />
+  <a href="https://www.yourfriend.online/"><strong>Meet Your Friend →</strong></a>
+</div>

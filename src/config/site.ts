@@ -11,7 +11,7 @@ export const navItems = [
   { label: 'Product', href: '#product' },
   { label: 'Experiences', href: '#experiences' },
   { label: 'Privacy', href: '#privacy' },
-  { label: 'Presence', href: '#presence' },
+  { label: 'Pricing', href: '#pricing' },
   { label: 'Demo', href: '#demo' },
 ];
 

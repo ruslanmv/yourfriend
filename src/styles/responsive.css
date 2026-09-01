@@ -21,6 +21,8 @@
   .container { width:min(100% - 30px, 640px); }
   .site-header { top:10px; width:calc(100% - 20px); border-radius:16px; padding-left:14px; }
   .header-demo { display:none; }
+  .theme-picker select { width: 1px; padding: 0; opacity: 0; }
+  .theme-picker { width: 42px; justify-content: center; }
   .hero { min-height:980px; padding-top:90px; align-items:flex-start; }
   .hero__content { min-height:900px; display:block; }
   .hero__copy { padding-top:65px; padding-bottom:0; max-width:100%; }
