@@ -1,22 +1,33 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin, VRMUtils, type VRM } from '@pixiv/three-vrm';
+import { avatarConfig } from '../../config/avatar';
+import { avatarQuality } from './AvatarQuality';
 
-export function AvatarCanvas() {
+export default function AvatarCanvas({ active, onReady, onError }: { active: boolean; onReady: () => void; onError: () => void }) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const [failed, setFailed] = useState(false);
+  const activeRef = useRef(active);
+  activeRef.current = active;
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
     let disposed = false;
     let vrm: VRM | null = null;
+    let firstFrameSent = false;
+    const quality = avatarQuality();
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 20);
     camera.position.set(0, 1.35, 3.1);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
+    } catch {
+      onError();
+      return;
+    }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality.dpr));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
@@ -24,7 +35,7 @@ export function AvatarCanvas() {
 
     scene.add(new THREE.HemisphereLight(0xeaf4ff, 0x22314d, 2.2));
     const key = new THREE.DirectionalLight(0xfff4e6, 3.2); key.position.set(-2, 3, 4); scene.add(key);
-    const rim = new THREE.DirectionalLight(0x7f94ff, 2.0); rim.position.set(3, 2, -2); scene.add(rim);
+    const rim = new THREE.DirectionalLight(0x7f94ff, 2); rim.position.set(3, 2, -2); scene.add(rim);
 
     const resize = () => {
       const rect = mount.getBoundingClientRect();
@@ -37,43 +48,52 @@ export function AvatarCanvas() {
 
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
-    loader.load('/avatar/models/companion.vrm', (gltf) => {
+    loader.load(avatarConfig.model, (gltf) => {
       if (disposed) return;
       vrm = gltf.userData.vrm as VRM;
+      if (!vrm) { onError(); return; }
       VRMUtils.removeUnnecessaryVertices(gltf.scene);
       VRMUtils.removeUnnecessaryJoints(gltf.scene);
       VRMUtils.rotateVRM0(vrm);
       scene.add(vrm.scene);
       vrm.scene.rotation.y = Math.PI;
       vrm.scene.position.y = -0.85;
-    }, undefined, () => !disposed && setFailed(true));
+    }, undefined, () => !disposed && onError());
 
     const clock = new THREE.Clock();
     let raf = 0;
-    const render = () => {
+    let lastFrame = 0;
+    const frameInterval = 1000 / quality.fps;
+    const render = (time: number) => {
       raf = requestAnimationFrame(render);
-      const elapsed = clock.getElapsedTime();
+      if (!activeRef.current || time - lastFrame < frameInterval) return;
+      lastFrame = time;
+      const delta = Math.min(clock.getDelta(), 0.1);
+      const elapsed = clock.elapsedTime;
       if (vrm) {
         vrm.scene.rotation.y = Math.PI + Math.sin(elapsed * 0.22) * 0.018;
         vrm.scene.position.y = -0.85 + Math.sin(elapsed * 0.85) * 0.006;
-        vrm.update(clock.getDelta());
+        vrm.update(delta);
       }
       renderer.render(scene, camera);
+      if (vrm && !firstFrameSent) {
+        firstFrameSent = true;
+        requestAnimationFrame(onReady);
+      }
     };
-    render();
+    raf = requestAnimationFrame(render);
 
     return () => {
       disposed = true; cancelAnimationFrame(raf); observer.disconnect();
       renderer.dispose(); renderer.domElement.remove();
-      vrm?.scene.traverse((obj) => {
-        const mesh = obj as THREE.Mesh;
+      vrm?.scene.traverse((object) => {
+        const mesh = object as THREE.Mesh;
         mesh.geometry?.dispose?.();
         const material = mesh.material as THREE.Material | THREE.Material[] | undefined;
-        if (Array.isArray(material)) material.forEach((m) => m.dispose()); else material?.dispose?.();
+        if (Array.isArray(material)) material.forEach((item) => item.dispose()); else material?.dispose?.();
       });
     };
-  }, []);
+  }, [onError, onReady]);
 
-  if (failed) return null;
   return <div ref={mountRef} className="avatar-canvas" aria-hidden="true"/>;
 }
