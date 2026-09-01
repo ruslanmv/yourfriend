@@ -5,11 +5,14 @@
 .nav { display: flex; gap: 30px; align-items: center; font-size: .88rem; color: var(--text-soft); }
 .nav a:hover { color: var(--text); }
 .header-actions { display: flex; justify-content: flex-end; align-items: center; gap: 10px; }
-.header-demo, .login-link, .theme-button, .menu-button { border: 1px solid var(--surface-border); border-radius: 12px; background: transparent; }
+.header-demo, .login-link, .theme-picker, .menu-button { border: 1px solid var(--surface-border); border-radius: 12px; background: transparent; }
 .header-demo { padding: 12px 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, white), var(--accent)); color: white; box-shadow: 0 8px 26px color-mix(in srgb, var(--accent) 28%, transparent); cursor: pointer; }
 .login-link { padding: 10px 12px; font-size: .82rem; }
-.theme-button, .menu-button { width: 42px; height: 42px; display: grid; place-items: center; cursor: pointer; }
-.theme-button svg, .menu-button svg { width: 18px; }
+.theme-picker { height: 42px; display: flex; align-items: center; gap: 5px; padding: 0 8px; }
+.theme-picker select { max-width: 72px; border: 0; color: var(--text); background: transparent; font-size: .76rem; cursor: pointer; }
+.theme-picker option { color: var(--text); background: var(--bg-soft); }
+.menu-button { width: 42px; height: 42px; display: grid; place-items: center; cursor: pointer; }
+.theme-picker svg, .menu-button svg { width: 18px; }
 .menu-button { display: none; }
 .nav--mobile { display: none; }
 
@@ -25,6 +28,7 @@
 .button { min-height: 54px; padding: 0 22px; border-radius: 16px; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: transform .25s ease, box-shadow .25s ease, background .25s ease; }
 .button svg { width: 18px; }
 .button:hover { transform: translateY(-2px); }
+.anchor-target { position: relative; top: calc(-1 * var(--header-h)); }
 .button--primary { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 72%, white), var(--accent)); color: white; box-shadow: 0 14px 34px color-mix(in srgb, var(--accent) 28%, transparent); }
 .button--secondary { border-color: var(--surface-border); background: color-mix(in srgb, var(--surface-strong) 68%, transparent); backdrop-filter: blur(16px); color: var(--text); }
 .button--ghost { background: transparent; color: var(--text); }

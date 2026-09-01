@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.yourfriend.online/sitemap.xml
+Sitemap: https://ruslanmv.github.io/yourfriend/sitemap.xml
