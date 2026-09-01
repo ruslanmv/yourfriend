@@ -1,0 +1,4 @@
+import { Link } from 'react-router-dom';
+export function LegalPage({ title }: { title: string }) {
+  return <main className="legal-page"><div className="container legal-page__inner"><Link to="/" className="brand"><span className="brand__mark"/><strong>YourFriend</strong></Link><h1>{title}</h1><p>This repository includes a placeholder legal page so routing, footer links, and deployment are complete. Replace this content with counsel-approved policy text before commercial launch.</p><h2>Before publishing</h2><p>Document the actual data flows, analytics providers, demo-form processor, retention periods, cookies, account system, and regional rights that apply to your deployment. Do not claim guarantees the product does not technically enforce.</p><Link to="/">← Back to home</Link></div></main>;
+}
