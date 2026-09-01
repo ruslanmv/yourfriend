@@ -130,8 +130,8 @@ Launch posters live at:
 
 ```text
 public/avatar/posters/
-Polished light/dark launch renders are bundled from
-`docs/reference-images/companion-integrated/`
+├── companion-light.svg
+└── companion-dark.svg
 ```
 
 For the canonical production character, replace these launch assets with transparent AVIF/WebP renders derived from the same commercially licensed VRM. Keep the poster permanently—even after live 3D ships—for first paint, reduced motion, mobile devices, slow networks, screenshots, and WebGL failure recovery.
@@ -395,8 +395,19 @@ Third-party dependencies remain subject to their respective licenses.
 
 ---
 
-<div align="center">
-  <strong>YourFriend</strong><br />
-  <em>AI companionship, with real presence.</em><br /><br />
-  <a href="https://www.yourfriend.online/"><strong>Meet Your Friend →</strong></a>
-</div>
+Two additional companion-only concept artworks (light mountain interior and dark rooftop city night) were added under `docs/reference-images/companion-integrated/` and included in the ZIP.
+
+### Vercel (marketing site)
+
+1. Import this repository in Vercel and select the Vite framework preset.
+2. Keep the build command as `npm run build` and output directory as `dist` (also declared in `vercel.json`).
+3. Set `VITE_SITE_URL` to the final marketing-site URL, including its trailing slash. Leave `VITE_BASE_PATH` unset for a root-domain deployment.
+4. Deploy. The included rewrite keeps direct SPA route refreshes working.
+
+### GitHub Pages
+
+1. In **Settings → Pages**, choose **GitHub Actions** as the source.
+2. Push to `main` or run **Deploy marketing site to Pages** manually.
+3. The workflow builds with `VITE_BASE_PATH=/yourfriend/` and deploys `dist` to `https://ruslanmv.github.io/yourfriend/`.
+
+For a future custom domain, change `VITE_SITE_URL`, set `VITE_BASE_PATH=/`, and update `public/robots.txt` and `public/sitemap.xml` to the same canonical host.
