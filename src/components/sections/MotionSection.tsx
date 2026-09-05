@@ -2,7 +2,7 @@ import { avatarConfig } from '../../config/avatar';
 import { Icon } from '../ui/Icon';
 
 export function MotionSection() {
-  return <section className="section section--motion"><div className="container motion-layout">
+  return <section className="section section--motion" id="core"><div className="container motion-layout">
     <div className="section-intro"><div className="kicker">Ambient motion system</div><h2>Calm motions, curated<br/>for <em>presence.</em></h2><p>YourFriend uses breathing, gaze, micro posture changes, small gestures, and carefully selected motion clips to feel alive without becoming distracting.</p></div>
     <div className="motion-diagram" aria-label="Ambient motion system diagram">
       <span className="diagram-label">Curated Motion Library</span>

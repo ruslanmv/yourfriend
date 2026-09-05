@@ -1,11 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { navItems, site } from '../../config/site';
 import type { ThemePreference } from '../../types';
 import { Icon } from '../ui/Icon';
-
-const themeOptions: { value: ThemePreference; label: string }[] = [
-  { value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' },
-];
 
 export function Header({ preference, onTheme, onDemo }: { preference: ThemePreference; onTheme: (v: ThemePreference) => void; onDemo: () => void }) {
   const [menu, setMenu] = useState(false);
@@ -14,8 +10,8 @@ export function Header({ preference, onTheme, onDemo }: { preference: ThemePrefe
     <nav className="nav nav--desktop" aria-label="Primary">{navItems.map(item => <a key={item.label} href={item.href}>{item.label}</a>)}</nav>
     <div className="header-actions">
       <label className="theme-picker"><span className="sr-only">Color theme</span><Icon name={preference === 'light' ? 'sun' : preference === 'dark' ? 'moon' : 'system'}/><select value={preference} onChange={(event) => onTheme(event.target.value as ThemePreference)} aria-label="Color theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
-      <button className="header-demo" onClick={onDemo}>Request Demo</button>
-      <a className="login-link" href={site.appUrl} target="_blank" rel="noopener noreferrer">Open YourFriend</a>
+      <a className="login-link" href={site.appUrl} target="_blank" rel="noopener noreferrer">Open app</a>
+      <button className="header-demo" onClick={onDemo}>Request Demo <span aria-hidden="true">→</span></button>
       <button className="menu-button" onClick={() => setMenu(v => !v)} aria-expanded={menu} aria-label={menu ? 'Close menu' : 'Open menu'}><Icon name={menu ? 'close' : 'menu'}/></button>
     </div>
     {menu && <nav className="nav nav--mobile" aria-label="Mobile navigation">{navItems.map(item => <a key={item.label} href={item.href} onClick={() => setMenu(false)}>{item.label}</a>)}</nav>}

@@ -296,7 +296,7 @@ The repository does not add a marketing backend. Confirm endpoint authentication
 
 1. Open **Settings → Pages** in the GitHub repository.
 2. Select **GitHub Actions** as the source.
-3. Push to `main` or manually run **Deploy marketing site to Pages**.
+3. Push to `main`/`master`, or manually run **Deploy marketing site to Pages**.
 4. The workflow tests, lints, builds, creates the SPA fallback, and publishes `dist/`.
 
 Production URL:
@@ -305,7 +305,7 @@ Production URL:
 https://ruslanmv.github.io/yourfriend/
 ```
 
-The Pages workflow builds with:
+The Pages workflow derives both values from the repository owner and name (and also supports an `owner.github.io` root site), then builds with the equivalent of:
 
 ```bash
 VITE_BASE_PATH=/yourfriend/ \

@@ -1,7 +1,7 @@
 name: Deploy marketing site to Pages
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
 permissions:
   contents: read
@@ -25,12 +25,28 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run lint
-      - run: npm run build
+      - name: Resolve GitHub Pages URLs
+        id: pages-url
+        shell: bash
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER}"
+          repository="${GITHUB_REPOSITORY#*/}"
+          if [[ "${repository,,}" == "${owner,,}.github.io" ]]; then
+            echo "base_path=/" >> "$GITHUB_OUTPUT"
+            echo "site_url=https://${owner}.github.io/" >> "$GITHUB_OUTPUT"
+          else
+            echo "base_path=/${repository}/" >> "$GITHUB_OUTPUT"
+            echo "site_url=https://${owner}.github.io/${repository}/" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build production site
+        run: npm run build
         env:
-          VITE_BASE_PATH: /yourfriend/
-          VITE_SITE_URL: https://ruslanmv.github.io/yourfriend/
+          VITE_BASE_PATH: ${{ steps.pages-url.outputs.base_path }}
+          VITE_SITE_URL: ${{ steps.pages-url.outputs.site_url }}
       - name: Add Pages SPA fallback
-        run: cp dist/index.html dist/404.html
+        run: |
+          cp dist/index.html dist/404.html
+          touch dist/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
