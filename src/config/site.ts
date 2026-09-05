@@ -12,7 +12,7 @@ export const navItems = [
   { label: 'Experiences', href: '#experiences' },
   { label: 'Privacy', href: '#privacy' },
   { label: 'Pricing', href: '#pricing' },
-  { label: 'Demo', href: '#demo' },
+  { label: 'Core', href: '#core' },
 ];
 
 export const experiences: Experience[] = [
