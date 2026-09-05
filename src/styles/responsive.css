@@ -31,7 +31,6 @@
   .hero__actions { flex-wrap:wrap; }
   .hero__wash { background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 42%,transparent),transparent 33%,transparent 68%,var(--bg) 98%); }
   .hero-avatar { right:-12%; bottom:40px; width:100%; height:570px; opacity:.92; }
-  .avatar-fallback__figure { right:2%; width:min(360px,80%); height:540px; }
   .ambient__controls { left:15px; right:15px; bottom:56px; }
   .ambient__thumbs { max-width:100%; overflow-x:auto; }
   .ambient__thumb { flex:0 0 54px; }
@@ -54,4 +53,25 @@
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+}
+
+@media (min-width: 1400px) {
+  .hero-avatar { width: 46%; height: 640px; }
+}
+
+@media (max-width: 1040px) and (min-width: 761px) {
+  .container { width: min(100% - 40px, 960px); }
+  .hero { min-height: 700px; }
+  .hero-avatar { right: -8%; width: 58%; height: 600px; }
+  .hero h1 { font-size: clamp(2.8rem, 6vw, 4rem); }
+}
+
+@media (max-width: 760px) {
+  .hero { min-height: 900px; padding-top: 78px; }
+  .hero__content { min-height: 840px; }
+  .hero__copy { padding-top: 44px; }
+  .hero h1 { font-size: clamp(2.7rem, 13vw, 4.2rem); }
+  .hero-avatar { right: -18%; bottom: 32px; width: 112%; height: 535px; }
+  .ambient__controls { bottom: 38px; }
+  .experience-card { min-height: 220px; }
 }

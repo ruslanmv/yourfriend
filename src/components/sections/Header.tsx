@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { navItems, site } from '../../config/site';
 import type { ThemePreference } from '../../types';
 import { Icon } from '../ui/Icon';
+
+const themeOptions: { value: ThemePreference; label: string }[] = [
+  { value: 'system', label: 'System' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' },
+];
 
 export function Header({ preference, onTheme, onDemo }: { preference: ThemePreference; onTheme: (v: ThemePreference) => void; onDemo: () => void }) {
   const [menu, setMenu] = useState(false);

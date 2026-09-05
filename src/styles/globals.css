@@ -9,8 +9,8 @@ button { color: inherit; }
 img, svg { display: block; max-width: 100%; }
 ::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); }
 :focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 70%, white); outline-offset: 3px; }
-.container { width: min(1180px, calc(100% - 48px)); margin-inline: auto; }
-.section { position: relative; padding: 90px 0; }
+.container { width: min(1440px, calc(100% - 64px)); margin-inline: auto; }
+.section { position: relative; padding: 68px 0; }
 .kicker, .center-label { text-transform: uppercase; letter-spacing: .22em; font-size: .72rem; font-weight: 700; color: var(--accent); }
 .center-label { display: flex; align-items: center; gap: 20px; justify-content: center; margin-bottom: 28px; }
 .center-label::before, .center-label::after { content: ''; width: 120px; height: 1px; background: var(--surface-border); }
