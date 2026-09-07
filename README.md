@@ -295,9 +295,16 @@ The repository does not add a marketing backend. Confirm endpoint authentication
 ### GitHub Pages
 
 1. Open **Settings → Pages** in the GitHub repository.
-2. Select **GitHub Actions** as the source.
+2. Under **Build and deployment → Source**, select **GitHub Actions**. This is a
+   one-time repository setting that `GITHUB_TOKEN` cannot change.
 3. Push to `main`/`master`, or manually run **Deploy marketing site to Pages**.
-4. The workflow tests, lints, builds, creates the SPA fallback, and publishes `dist/`.
+4. The workflow tests, lints, builds, creates the SPA fallback, and publishes
+   `dist/`.
+
+Do not select **Deploy from a branch**. That mode serves this repository's Vite
+development entry point (`/src/main.tsx`) without compiling it, which leaves the
+production page blank. The workflow deliberately publishes only the compiled
+artifact.
 
 Production URL:
 
