@@ -192,7 +192,6 @@ Do not bake characters, logos, interface controls, or text into rotating environ
 
 ```text
 yourfriend/
-├── .github/workflows/pages.yml    # GitHub Pages CI/CD
 ├── docs/
 │   ├── readme/                    # README SVG artwork and diagrams
 │   └── reference-images/          # Preserved art direction and source references
@@ -206,6 +205,8 @@ yourfriend/
 │   ├── social/                    # OpenGraph/social assets
 │   ├── robots.txt
 │   └── sitemap.xml
+├── scripts/
+│   └── deploy-pages.mjs           # Publish compiled dist/ to gh-pages
 ├── src/
 │   ├── components/
 │   │   ├── ambient/               # Slow scene rotation
@@ -252,6 +253,7 @@ Open the local URL printed by Vite, normally [`http://localhost:5173`](http://lo
 | `npm run typecheck` | Run TypeScript project checks |
 | `npm run lint` | Run ESLint |
 | `npm test` | Run the Vitest suite once |
+| `npm run deploy:pages` | Test, lint, build, and publish `dist/` to `gh-pages` |
 
 ## Configuration
 
@@ -264,7 +266,7 @@ Copy `.env.example` to `.env`. Never commit credentials or environment-specific 
 | `VITE_SALES_EMAIL` | No | `hello@yourfriend.online` | `mailto:` fallback for demo requests |
 | `VITE_DEMO_ENDPOINT` | No | empty | Optional JSON form endpoint |
 | `VITE_SITE_URL` | Production | Pages URL in `.env.production` | Canonical and social metadata origin, with trailing slash |
-| `VITE_BASE_PATH` | GitHub Pages | `/` | Vite asset and router base path |
+| `VITE_BASE_PATH` | GitHub Pages | `/` | Vite asset and router base path; production uses `/yourfriend/` |
 
 If `VITE_DEMO_ENDPOINT` is configured, it must accept JSON shaped as follows:
 
@@ -294,31 +296,26 @@ The repository does not add a marketing backend. Confirm endpoint authentication
 
 ### GitHub Pages
 
-1. In **Settings → Pages → Build and deployment → Source**, select
-   **GitHub Actions**. This one-time repository setting requires administrator
-   access and cannot be changed by the workflow's `GITHUB_TOKEN`.
-2. Leave **Custom domain** empty to use the standard project URL.
-3. Push to `main` or `master`, or manually run **Deploy marketing site to Pages**.
-4. The workflow installs dependencies, tests, lints, builds, adds the SPA fallback,
-   and publishes `dist/`.
+GitHub Pages uses the traditional branch publishing mechanism. The application source stays on `master`; only the compiled static site is written to `gh-pages`.
 
-The **GitHub Actions** source is required: publishing this repository's root from
-the `master` branch makes Pages serve the Vite development entry point
-(`/src/main.tsx`) without compiling it, which leaves the production page blank.
-The workflow deliberately does not call the Pages settings API: GitHub rejects that
-administrator-only operation for the workflow token with HTTP 403.
+1. Run `npm run deploy:pages` from a clean checkout of `master`. The command runs tests and linting, builds Vite with the production values in `.env.production`, adds `404.html` for SPA routes plus `.nojekyll`, and force-publishes only `dist/` to the `gh-pages` branch.
+2. In **Settings → Pages → Build and deployment → Source**, select **Deploy from a branch**.
+3. Select branch **`gh-pages`** and folder **`/ (root)`**, then save.
+4. Leave the project repository's **Custom domain** field empty. The account Pages site owns `ruslanmv.com`, so this project is served below that domain at `/yourfriend/`.
+
+Do not configure Pages to publish `master`: its root `index.html` is the Vite development entry point and references `/src/main.tsx`, which GitHub's branch/Jekyll build does not compile. Do not re-enable the removed Pages Actions workflow; using both mechanisms can cause one deployment to overwrite the other.
 
 Production URL:
 
 ```text
-https://ruslanmv.github.io/yourfriend/
+https://ruslanmv.com/yourfriend/
 ```
 
-The workflow uses GitHub Pages' standard artifact deployment. Its production build
-is equivalent to:
+The production environment sets:
 
-```bash
-VITE_BASE_PATH=/yourfriend/ npm run build
+```text
+VITE_SITE_URL=https://ruslanmv.com/yourfriend/
+VITE_BASE_PATH=/yourfriend/
 ```
 
 Do not change the application CTA destination unless the production application itself moves.
