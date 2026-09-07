@@ -294,15 +294,21 @@ The repository does not add a marketing backend. Confirm endpoint authentication
 
 ### GitHub Pages
 
-1. Push to `main`/`master`, or manually run **Deploy marketing site to Pages**.
-2. The workflow switches the Pages publishing source from a branch/Jekyll build to
-   **GitHub Actions**, then tests, lints, builds, creates the SPA fallback, and
-   publishes `dist/`.
+1. In **Settings → Pages → Build and deployment → Source**, select
+   **GitHub Actions**. This one-time repository setting requires administrator
+   access and cannot be changed by the workflow's `GITHUB_TOKEN`.
+2. If you want to use the default project URL shown below, remove `ruslanmv.com`
+   from **Custom domain**. An apex custom domain serves the site at the domain root,
+   not at `/yourfriend/`, and requires its DNS records to be configured separately.
+3. Push to `main`/`master`, or manually run **Deploy marketing site to Pages**.
+4. The workflow tests, lints, builds, creates the SPA fallback, and publishes
+   `dist/`.
 
-The source switch is intentional: publishing this repository's root directly makes
-Pages serve the Vite development entry point (`/src/main.tsx`) without compiling it,
-which leaves the production page blank. The workflow uses the repository's built-in
-`GITHUB_TOKEN` with `pages: write` permission to keep the setting correct.
+The **GitHub Actions** source is required: publishing this repository's root from
+the `master` branch makes Pages serve the Vite development entry point
+(`/src/main.tsx`) without compiling it, which leaves the production page blank.
+The workflow deliberately does not call the Pages settings API: GitHub rejects that
+administrator-only operation for the workflow token with HTTP 403.
 
 Production URL:
 
@@ -412,7 +418,9 @@ Two additional companion-only concept artworks (light mountain interior and dark
 ### GitHub Pages
 
 1. In **Settings → Pages**, choose **GitHub Actions** as the source.
-2. Push to `main` or run **Deploy marketing site to Pages** manually.
-3. The workflow builds with `VITE_BASE_PATH=/yourfriend/` and deploys `dist` to `https://ruslanmv.github.io/yourfriend/`.
+2. Remove the custom domain unless its DNS is configured and the site is intended
+   to be served from that domain's root.
+3. Push to `main` or run **Deploy marketing site to Pages** manually.
+4. The workflow builds with `VITE_BASE_PATH=/yourfriend/` and deploys `dist` to `https://ruslanmv.github.io/yourfriend/`.
 
 For a future custom domain, change `VITE_SITE_URL`, set `VITE_BASE_PATH=/`, and update `public/robots.txt` and `public/sitemap.xml` to the same canonical host.
