@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepare:pages": "npm test && npm run lint && npm run build",
+    "deploy:pages": "npm run prepare:pages && node scripts/deploy-pages.mjs"
   },
   "dependencies": {
     "@pixiv/three-vrm": "^3.4.4",
@@ -27,7 +29,7 @@
     "@types/three": "^0.179.0",
     "@vitejs/plugin-react": "^5.0.2",
     "eslint": "^9.34.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-hooks": "^0.4.20",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "jsdom": "^26.1.0",
