@@ -27,31 +27,17 @@ jobs:
       - run: npm run lint
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Resolve GitHub Pages URLs
-        id: pages-url
-        shell: bash
-        run: |
-          owner="${GITHUB_REPOSITORY_OWNER}"
-          repository="${GITHUB_REPOSITORY#*/}"
-          if [[ "${repository,,}" == "${owner,,}.github.io" ]]; then
-            echo "base_path=/" >> "$GITHUB_OUTPUT"
-            echo "site_url=https://${owner}.github.io/" >> "$GITHUB_OUTPUT"
-          else
-            echo "base_path=/${repository}/" >> "$GITHUB_OUTPUT"
-            echo "site_url=https://${owner}.github.io/${repository}/" >> "$GITHUB_OUTPUT"
-          fi
       - name: Build production site
         run: npm run build
         env:
           VITE_BASE_PATH: /yourfriend/
-          VITE_SITE_URL: https://ruslanmv.com/yourfriend/
-      - name: Create custom-domain Pages artifact
+      - name: Add SPA fallback
         run: |
           cp dist/index.html dist/404.html
           touch dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: pages-root
+          path: dist
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

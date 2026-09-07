@@ -297,12 +297,10 @@ The repository does not add a marketing backend. Confirm endpoint authentication
 1. In **Settings → Pages → Build and deployment → Source**, select
    **GitHub Actions**. This one-time repository setting requires administrator
    access and cannot be changed by the workflow's `GITHUB_TOKEN`.
-2. If you want to use the default project URL shown below, remove `ruslanmv.com`
-   from **Custom domain**. An apex custom domain serves the site at the domain root,
-   not at `/yourfriend/`, and requires its DNS records to be configured separately.
-3. Push to `main`/`master`, or manually run **Deploy marketing site to Pages**.
-4. The workflow tests, lints, builds, creates the SPA fallback, and publishes
-   `dist/`.
+2. Leave **Custom domain** empty to use the standard project URL.
+3. Push to `main` or `master`, or manually run **Deploy marketing site to Pages**.
+4. The workflow installs dependencies, tests, lints, builds, adds the SPA fallback,
+   and publishes `dist/`.
 
 The **GitHub Actions** source is required: publishing this repository's root from
 the `master` branch makes Pages serve the Vite development entry point
@@ -313,27 +311,15 @@ administrator-only operation for the workflow token with HTTP 403.
 Production URL:
 
 ```text
-https://ruslanmv.com/yourfriend/
+https://ruslanmv.github.io/yourfriend/
 ```
 
-The Pages workflow targets the configured custom-domain subdirectory and builds
-with the equivalent of:
+The workflow uses GitHub Pages' standard artifact deployment. Its production build
+is equivalent to:
 
 ```bash
-VITE_BASE_PATH=/yourfriend/ \
-VITE_SITE_URL=https://ruslanmv.com/yourfriend/ \
-npm run build
+VITE_BASE_PATH=/yourfriend/ npm run build
 ```
-
-### Custom domain
-
-The current deployment uses a custom domain with a subdirectory:
-
-1. `public/CNAME` declares `ruslanmv.com`.
-2. `VITE_SITE_URL` is `https://ruslanmv.com/yourfriend/`.
-3. `VITE_BASE_PATH` is `/yourfriend/`.
-4. The workflow places the built site in the artifact's `yourfriend/` directory.
-5. `public/robots.txt` and `public/sitemap.xml` use the same public URL.
 
 Do not change the application CTA destination unless the production application itself moves.
 
@@ -404,25 +390,3 @@ Third-party dependencies remain subject to their respective licenses.
 - **Product application:** [`https://www.yourfriend.online/`](https://www.yourfriend.online/)
 - **Repository:** [`https://github.com/ruslanmv/yourfriend`](https://github.com/ruslanmv/yourfriend)
 - **Commercial inquiries:** [`hello@yourfriend.online`](mailto:hello@yourfriend.online)
-
----
-
-Two additional companion-only concept artworks (light mountain interior and dark rooftop city night) were added under `docs/reference-images/companion-integrated/` and included in the ZIP.
-
-### Vercel (marketing site)
-
-1. Import this repository in Vercel and select the Vite framework preset.
-2. Keep the build command as `npm run build` and output directory as `dist` (also declared in `vercel.json`).
-3. Set `VITE_SITE_URL` to the final marketing-site URL, including its trailing slash. Leave `VITE_BASE_PATH` unset for a root-domain deployment.
-4. Deploy. The included rewrite keeps direct SPA route refreshes working.
-
-### GitHub Pages
-
-1. In **Settings → Pages**, choose **GitHub Actions** as the source.
-2. Remove the custom domain unless its DNS is configured and the site is intended
-   to be served from that domain's root.
-3. Push to `main` or run **Deploy marketing site to Pages** manually.
-4. The workflow builds with `VITE_BASE_PATH=/yourfriend/` and deploys `dist` to `https://ruslanmv.github.io/yourfriend/`.
-
-The committed `CNAME`, canonical build URL, sitemap, and asset base all target the
-same custom-domain subdirectory.
