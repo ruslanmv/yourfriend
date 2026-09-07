@@ -192,32 +192,21 @@ Do not bake characters, logos, interface controls, or text into rotating environ
 
 ```text
 yourfriend/
+├── .github/workflows/
+│   └── publish-pages-branch.yml   # Validate PRs; publish dist/ to gh-pages on master
 ├── docs/
-│   ├── readme/                    # README SVG artwork and diagrams
-│   └── reference-images/          # Preserved art direction and source references
+│   ├── readme/
+│   └── reference-images/
 ├── public/
-│   ├── ambient/{light,dark}/      # Optimized rotating environments
+│   ├── ambient/{light,dark}/
 │   ├── avatar/
-│   │   ├── posters/               # Always-available static character path
-│   │   ├── models/                # Optional licensed companion.vrm
-│   │   └── animations/            # Optional curated VRMA clips
-│   ├── preview/                   # Product preview media
-│   ├── social/                    # OpenGraph/social assets
+│   ├── preview/
+│   ├── social/
 │   ├── robots.txt
 │   └── sitemap.xml
 ├── scripts/
 │   └── deploy-pages.mjs           # Publish compiled dist/ to gh-pages
 ├── src/
-│   ├── components/
-│   │   ├── ambient/               # Slow scene rotation
-│   │   ├── avatar/                # Poster-first / optional live VRM controller
-│   │   ├── modals/
-│   │   ├── sections/
-│   │   └── ui/
-│   ├── config/                    # Site, avatar, and ambient configuration
-│   ├── hooks/
-│   ├── pages/
-│   └── styles/
 ├── tests/
 ├── index.html
 ├── vercel.json
@@ -253,7 +242,7 @@ Open the local URL printed by Vite, normally [`http://localhost:5173`](http://lo
 | `npm run typecheck` | Run TypeScript project checks |
 | `npm run lint` | Run ESLint |
 | `npm test` | Run the Vitest suite once |
-| `npm run deploy:pages` | Test, lint, build, and publish `dist/` to `gh-pages` |
+| `npm run deploy:pages` | Test, lint, build, and publish `dist/` to `gh-pages` manually |
 
 ## Configuration
 
@@ -296,14 +285,22 @@ The repository does not add a marketing backend. Confirm endpoint authentication
 
 ### GitHub Pages
 
-GitHub Pages uses the traditional branch publishing mechanism. The application source stays on `master`; only the compiled static site is written to `gh-pages`.
+GitHub Pages uses the traditional **Deploy from a branch** model. Application source stays on `master`; only the compiled static site is committed to `gh-pages`.
 
-1. Run `npm run deploy:pages` from a clean checkout of `master`. The command runs tests and linting, builds Vite with the production values in `.env.production`, adds `404.html` for SPA routes plus `.nojekyll`, and force-publishes only `dist/` to the `gh-pages` branch.
+1. Merge changes to `master`. The `Validate and publish gh-pages branch` workflow runs tests, linting, and a Vite build, then publishes only `dist/` to `gh-pages`.
 2. In **Settings → Pages → Build and deployment → Source**, select **Deploy from a branch**.
 3. Select branch **`gh-pages`** and folder **`/ (root)`**, then save.
-4. Leave the project repository's **Custom domain** field empty. The account Pages site owns `ruslanmv.com`, so this project is served below that domain at `/yourfriend/`.
+4. Leave the project repository's **Custom domain** field empty. The account Pages site owns `ruslanmv.com`, so this project is served at `/yourfriend/`.
 
-Do not configure Pages to publish `master`: its root `index.html` is the Vite development entry point and references `/src/main.tsx`, which GitHub's branch/Jekyll build does not compile. Do not re-enable the removed Pages Actions workflow; using both mechanisms can cause one deployment to overwrite the other.
+The workflow does **not** deploy through `actions/deploy-pages`; it only automates the Git commit that maintains the traditional `gh-pages` publishing branch. Pull requests run validation only and cannot publish.
+
+For a manual deployment from an authenticated local clone, run:
+
+```bash
+npm run deploy:pages
+```
+
+Do not configure Pages to publish `master`: its root `index.html` is the Vite development entry point and references `/src/main.tsx`, which GitHub's branch/Jekyll build does not compile.
 
 Production URL:
 
