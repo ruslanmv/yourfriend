@@ -25,6 +25,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run lint
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
       - name: Resolve GitHub Pages URLs
         id: pages-url
         shell: bash
@@ -47,11 +49,6 @@ jobs:
         run: |
           cp dist/index.html dist/404.html
           touch dist/.nojekyll
-      - name: Configure Pages to use GitHub Actions
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" -f build_type=workflow
-      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
