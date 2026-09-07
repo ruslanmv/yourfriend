@@ -43,15 +43,15 @@ jobs:
       - name: Build production site
         run: npm run build
         env:
-          VITE_BASE_PATH: ${{ steps.pages-url.outputs.base_path }}
-          VITE_SITE_URL: ${{ steps.pages-url.outputs.site_url }}
-      - name: Add Pages SPA fallback
+          VITE_BASE_PATH: /yourfriend/
+          VITE_SITE_URL: https://ruslanmv.com/yourfriend/
+      - name: Create custom-domain Pages artifact
         run: |
           cp dist/index.html dist/404.html
           touch dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: pages-root
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

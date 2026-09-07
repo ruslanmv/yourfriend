@@ -313,26 +313,27 @@ administrator-only operation for the workflow token with HTTP 403.
 Production URL:
 
 ```text
-https://ruslanmv.github.io/yourfriend/
+https://ruslanmv.com/yourfriend/
 ```
 
-The Pages workflow derives both values from the repository owner and name (and also supports an `owner.github.io` root site), then builds with the equivalent of:
+The Pages workflow targets the configured custom-domain subdirectory and builds
+with the equivalent of:
 
 ```bash
 VITE_BASE_PATH=/yourfriend/ \
-VITE_SITE_URL=https://ruslanmv.github.io/yourfriend/ \
+VITE_SITE_URL=https://ruslanmv.com/yourfriend/ \
 npm run build
 ```
 
 ### Custom domain
 
-When attaching a custom marketing domain:
+The current deployment uses a custom domain with a subdirectory:
 
-1. Set `VITE_SITE_URL=https://marketing.example.com/`.
-2. Set `VITE_BASE_PATH=/`.
-3. Update `public/robots.txt` and `public/sitemap.xml` to the same host.
-4. Configure the domain with the selected host.
-5. Re-run canonical, OpenGraph, route-refresh, and asset-path checks.
+1. `public/CNAME` declares `ruslanmv.com`.
+2. `VITE_SITE_URL` is `https://ruslanmv.com/yourfriend/`.
+3. `VITE_BASE_PATH` is `/yourfriend/`.
+4. The workflow places the built site in the artifact's `yourfriend/` directory.
+5. `public/robots.txt` and `public/sitemap.xml` use the same public URL.
 
 Do not change the application CTA destination unless the production application itself moves.
 
@@ -423,4 +424,5 @@ Two additional companion-only concept artworks (light mountain interior and dark
 3. Push to `main` or run **Deploy marketing site to Pages** manually.
 4. The workflow builds with `VITE_BASE_PATH=/yourfriend/` and deploys `dist` to `https://ruslanmv.github.io/yourfriend/`.
 
-For a future custom domain, change `VITE_SITE_URL`, set `VITE_BASE_PATH=/`, and update `public/robots.txt` and `public/sitemap.xml` to the same canonical host.
+The committed `CNAME`, canonical build URL, sitemap, and asset base all target the
+same custom-domain subdirectory.
