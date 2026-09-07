@@ -25,36 +25,23 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run lint
-      - name: Resolve GitHub Pages URLs
-        id: pages-url
-        shell: bash
-        run: |
-          owner="${GITHUB_REPOSITORY_OWNER}"
-          repository="${GITHUB_REPOSITORY#*/}"
-          if [[ "${repository,,}" == "${owner,,}.github.io" ]]; then
-            echo "base_path=/" >> "$GITHUB_OUTPUT"
-            echo "site_url=https://${owner}.github.io/" >> "$GITHUB_OUTPUT"
-          else
-            echo "base_path=/${repository}/" >> "$GITHUB_OUTPUT"
-            echo "site_url=https://${owner}.github.io/${repository}/" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
       - name: Build production site
         run: npm run build
         env:
-          VITE_BASE_PATH: ${{ steps.pages-url.outputs.base_path }}
-          VITE_SITE_URL: ${{ steps.pages-url.outputs.site_url }}
-      - name: Add Pages SPA fallback
+          VITE_BASE_PATH: /yourfriend/
+          VITE_SITE_URL: https://ruslanmv.com/yourfriend/
+      - name: Create custom-domain Pages artifact
         run: |
-          cp dist/index.html dist/404.html
-          touch dist/.nojekyll
-      - name: Configure Pages to use GitHub Actions
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" -f build_type=workflow
-      - uses: actions/configure-pages@v5
+          mkdir -p pages-root
+          mv dist pages-root/yourfriend
+          mv pages-root/yourfriend/CNAME pages-root/CNAME
+          cp pages-root/yourfriend/index.html pages-root/404.html
+          touch pages-root/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: pages-root
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

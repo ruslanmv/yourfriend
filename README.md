@@ -294,39 +294,45 @@ The repository does not add a marketing backend. Confirm endpoint authentication
 
 ### GitHub Pages
 
-1. Push to `main`/`master`, or manually run **Deploy marketing site to Pages**.
-2. The workflow switches the Pages publishing source from a branch/Jekyll build to
-   **GitHub Actions**, then tests, lints, builds, creates the SPA fallback, and
-   publishes `dist/`.
+1. In **Settings → Pages → Build and deployment → Source**, select
+   **GitHub Actions**. This one-time repository setting requires administrator
+   access and cannot be changed by the workflow's `GITHUB_TOKEN`.
+2. Keep `ruslanmv.com` configured as the custom domain and ensure its DNS records
+   point to GitHub Pages.
+3. Push to `main`/`master`, or manually run **Deploy marketing site to Pages**.
+4. The workflow tests, lints, builds, and publishes the application under the
+   `/yourfriend/` directory in the Pages artifact.
 
-The source switch is intentional: publishing this repository's root directly makes
-Pages serve the Vite development entry point (`/src/main.tsx`) without compiling it,
-which leaves the production page blank. The workflow uses the repository's built-in
-`GITHUB_TOKEN` with `pages: write` permission to keep the setting correct.
+The **GitHub Actions** source is required: publishing this repository's root from
+the `master` branch makes Pages serve the Vite development entry point
+(`/src/main.tsx`) without compiling it, which leaves the production page blank.
+The workflow deliberately does not call the Pages settings API: GitHub rejects that
+administrator-only operation for the workflow token with HTTP 403.
 
 Production URL:
 
 ```text
-https://ruslanmv.github.io/yourfriend/
+https://ruslanmv.com/yourfriend/
 ```
 
-The Pages workflow derives both values from the repository owner and name (and also supports an `owner.github.io` root site), then builds with the equivalent of:
+The Pages workflow targets the configured custom-domain subdirectory and builds
+with the equivalent of:
 
 ```bash
 VITE_BASE_PATH=/yourfriend/ \
-VITE_SITE_URL=https://ruslanmv.github.io/yourfriend/ \
+VITE_SITE_URL=https://ruslanmv.com/yourfriend/ \
 npm run build
 ```
 
 ### Custom domain
 
-When attaching a custom marketing domain:
+The current deployment uses a custom domain with a subdirectory:
 
-1. Set `VITE_SITE_URL=https://marketing.example.com/`.
-2. Set `VITE_BASE_PATH=/`.
-3. Update `public/robots.txt` and `public/sitemap.xml` to the same host.
-4. Configure the domain with the selected host.
-5. Re-run canonical, OpenGraph, route-refresh, and asset-path checks.
+1. `public/CNAME` declares `ruslanmv.com`.
+2. `VITE_SITE_URL` is `https://ruslanmv.com/yourfriend/`.
+3. `VITE_BASE_PATH` is `/yourfriend/`.
+4. The workflow places the built site in the artifact's `yourfriend/` directory.
+5. `public/robots.txt` and `public/sitemap.xml` use the same public URL.
 
 Do not change the application CTA destination unless the production application itself moves.
 
@@ -412,7 +418,10 @@ Two additional companion-only concept artworks (light mountain interior and dark
 ### GitHub Pages
 
 1. In **Settings → Pages**, choose **GitHub Actions** as the source.
-2. Push to `main` or run **Deploy marketing site to Pages** manually.
-3. The workflow builds with `VITE_BASE_PATH=/yourfriend/` and deploys `dist` to `https://ruslanmv.github.io/yourfriend/`.
+2. Keep `ruslanmv.com` as the custom domain and configure its DNS for GitHub Pages.
+3. Push to `main` or run **Deploy marketing site to Pages** manually.
+4. The workflow builds with `VITE_BASE_PATH=/yourfriend/`, places the build in the
+   artifact's `/yourfriend/` directory, and deploys it to `https://ruslanmv.com/yourfriend/`.
 
-For a future custom domain, change `VITE_SITE_URL`, set `VITE_BASE_PATH=/`, and update `public/robots.txt` and `public/sitemap.xml` to the same canonical host.
+The committed `CNAME`, canonical build URL, sitemap, and asset base all target the
+same custom-domain subdirectory.
