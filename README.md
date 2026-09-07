@@ -297,11 +297,12 @@ The repository does not add a marketing backend. Confirm endpoint authentication
 1. In **Settings → Pages → Build and deployment → Source**, select
    **GitHub Actions**. This one-time repository setting requires administrator
    access and cannot be changed by the workflow's `GITHUB_TOKEN`.
-2. Keep `ruslanmv.com` configured as the custom domain and ensure its DNS records
-   point to GitHub Pages.
+2. If you want to use the default project URL shown below, remove `ruslanmv.com`
+   from **Custom domain**. An apex custom domain serves the site at the domain root,
+   not at `/yourfriend/`, and requires its DNS records to be configured separately.
 3. Push to `main`/`master`, or manually run **Deploy marketing site to Pages**.
-4. The workflow tests, lints, builds, and publishes the application under the
-   `/yourfriend/` directory in the Pages artifact.
+4. The workflow tests, lints, builds, creates the SPA fallback, and publishes
+   `dist/`.
 
 The **GitHub Actions** source is required: publishing this repository's root from
 the `master` branch makes Pages serve the Vite development entry point
@@ -418,10 +419,10 @@ Two additional companion-only concept artworks (light mountain interior and dark
 ### GitHub Pages
 
 1. In **Settings → Pages**, choose **GitHub Actions** as the source.
-2. Keep `ruslanmv.com` as the custom domain and configure its DNS for GitHub Pages.
+2. Remove the custom domain unless its DNS is configured and the site is intended
+   to be served from that domain's root.
 3. Push to `main` or run **Deploy marketing site to Pages** manually.
-4. The workflow builds with `VITE_BASE_PATH=/yourfriend/`, places the build in the
-   artifact's `/yourfriend/` directory, and deploys it to `https://ruslanmv.com/yourfriend/`.
+4. The workflow builds with `VITE_BASE_PATH=/yourfriend/` and deploys `dist` to `https://ruslanmv.github.io/yourfriend/`.
 
 The committed `CNAME`, canonical build URL, sitemap, and asset base all target the
 same custom-domain subdirectory.
