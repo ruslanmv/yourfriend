@@ -28,6 +28,10 @@ export const avatarConfig = {
     mobileFPS: 24,
     mobileDPR: 1.25,
   },
-  transition: { posterToLive: 750 },
+  transition: {
+    minimumPosterMs: 1800,
+    posterToLive: 900,
+    stableFrames: 8,
+  },
   idleDelay: 1000,
 } as const;
