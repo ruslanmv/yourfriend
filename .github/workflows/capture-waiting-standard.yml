@@ -33,6 +33,12 @@ jobs:
       - name: Capture Waiting-standard avatar
         run: python scripts/capture_waiting_standard.py
 
+      - name: Upload generated poster
+        uses: actions/upload-artifact@v4
+        with:
+          name: waiting-standard-poster
+          path: public/avatar/posters/companion-waiting-standard.png
+
       - name: Commit generated poster
         run: |
           git config user.name "github-actions[bot]"
