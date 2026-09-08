@@ -14,8 +14,13 @@ Example:
     --out-dir ./public/avatar/posters \
     --name avatar-sample-o \
     --blender blender \
+    --framing portrait \
     --webp \
     --svg-wrapper
+
+Use --framing portrait for landing-page artwork and --framing face for small
+motion thumbnails. Those crops intentionally avoid the authored full-body rest
+pose when its hands sit over the hips or torso.
 
 This script:
   1) Reads the VRoid Hub model details and checks commercial/download permissions.
@@ -173,6 +178,7 @@ def run_blender(
     width: int,
     height: int,
     yaw: float,
+    framing: str,
 ) -> None:
     blender_bin = shutil.which(blender) or blender
     cmd = [
@@ -191,6 +197,8 @@ def run_blender(
         str(height),
         "--yaw",
         str(yaw),
+        "--framing",
+        framing,
     ]
     print("Running:", " ".join(cmd))
     subprocess.run(cmd, check=True)
@@ -235,6 +243,12 @@ def main() -> int:
         default=180.0,
         help="Rotate avatar around vertical axis. Use 0 if the first render faces backward.",
     )
+    parser.add_argument(
+        "--framing",
+        choices=("full", "portrait", "face"),
+        default="portrait",
+        help="Camera crop for the generated poster. Portrait is the marketing default.",
+    )
     parser.add_argument("--webp", action="store_true")
     parser.add_argument(
         "--svg-wrapper",
@@ -266,6 +280,7 @@ def main() -> int:
     snapshot = verify_model_for_advertising(model_detail)
 
     snapshot["checked_at_utc"] = datetime.now(timezone.utc).isoformat()
+    snapshot["render_framing"] = args.framing
     snapshot_path = out_dir / f"{args.name}-license.json"
     snapshot_path.write_text(
         json.dumps(snapshot, ensure_ascii=False, indent=2),
@@ -279,7 +294,7 @@ def main() -> int:
     print(f"Downloaded: {vrm_path} (download license {license_id})")
 
     png_path = out_dir / f"{args.name}.png"
-    print("Rendering transparent PNG...")
+    print(f"Rendering transparent PNG ({args.framing})...")
     run_blender(
         args.blender,
         render_script,
@@ -288,6 +303,7 @@ def main() -> int:
         args.width,
         args.height,
         args.yaw,
+        args.framing,
     )
     print(f"PNG: {png_path}")
 
