@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { site } from '../src/config/site';
 import { MotionSection } from '../src/components/sections/MotionSection';
@@ -14,8 +14,10 @@ describe('live demo and motion presentation', () => {
     const portrait = screen.getByAltText('Close-up of the companion avatar');
     expect(portrait).toHaveAttribute('src', expect.stringContaining('assets/companion-512.png'));
     expect(portrait).not.toHaveAttribute('src', expect.stringContaining('companion-fullscreen.png'));
+
+    const sources = within(screen.getByLabelText('Motion sources'));
     for (const label of ['VRMA clips', 'Procedural idle', 'Gaze', 'Expressions', 'Lip sync']) {
-      expect(screen.getByText(label)).toBeInTheDocument();
+      expect(sources.getByText(label)).toBeInTheDocument();
     }
   });
 });
