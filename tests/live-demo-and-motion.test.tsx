@@ -9,11 +9,12 @@ describe('live demo and motion presentation', () => {
     expect(site.appUrl).toBe('https://www.yourfriend.online/');
   });
 
-  it('uses the dedicated companion portrait instead of the fullscreen app screenshot', () => {
+  it('uses the generated Waiting-standard avatar instead of screenshot crops or a T-pose preview', () => {
     render(<MotionSection/>);
     const portrait = screen.getByAltText('Close-up of the companion avatar');
-    expect(portrait).toHaveAttribute('src', expect.stringContaining('assets/companion-512.png'));
+    expect(portrait).toHaveAttribute('src', expect.stringContaining('companion-waiting-standard.png'));
     expect(portrait).not.toHaveAttribute('src', expect.stringContaining('companion-fullscreen.png'));
+    expect(portrait).not.toHaveAttribute('src', expect.stringContaining('companion-512.png'));
 
     const sources = within(screen.getByLabelText('Motion sources'));
     for (const label of ['VRMA clips', 'Procedural idle', 'Gaze', 'Expressions', 'Lip sync']) {
