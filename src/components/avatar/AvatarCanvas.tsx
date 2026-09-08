@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin, VRMUtils, type VRM } from '@pixiv/three-vrm';
 import { avatarConfig } from '../../config/avatar';
 import { avatarQuality } from './AvatarQuality';
+import { fitCameraToObject, isObjectMeaningfullyFramed } from './avatarFraming';
 
 export default function AvatarCanvas({ active, onReady, onError }: { active: boolean; onReady: () => void; onError: () => void }) {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -20,15 +21,21 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
     let wasActive = false;
     let contextLost = false;
     let renderErrorReported = false;
+    let baseY = 0;
+    const baseRotationY = Math.PI;
     const quality = avatarQuality();
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 20);
-    camera.position.set(0, 1.35, 3.1);
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.01, 50);
     let renderer: THREE.WebGLRenderer;
 
     const resetReadiness = () => {
       stableFrames = 0;
       readySent = false;
+    };
+
+    const fitAvatar = () => {
+      if (!vrm) return false;
+      return fitCameraToObject(camera, vrm.scene, 1.12, 0.025) !== null;
     };
 
     try {
@@ -53,6 +60,7 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
       contextLost = false;
       renderErrorReported = false;
       resetReadiness();
+      fitAvatar();
     };
     renderer.domElement.addEventListener('webglcontextlost', handleContextLost);
     renderer.domElement.addEventListener('webglcontextrestored', handleContextRestored);
@@ -67,6 +75,10 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
       renderer.setSize(rect.width, rect.height, false);
       camera.aspect = rect.width / rect.height;
       camera.updateProjectionMatrix();
+      if (vrm) {
+        fitAvatar();
+        resetReadiness();
+      }
     };
     const observer = new ResizeObserver(resize); observer.observe(mount); resize();
 
@@ -80,8 +92,16 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
       VRMUtils.removeUnnecessaryJoints(gltf.scene);
       VRMUtils.rotateVRM0(vrm);
       scene.add(vrm.scene);
-      vrm.scene.rotation.y = Math.PI;
-      vrm.scene.position.y = -0.85;
+      vrm.scene.rotation.y = baseRotationY;
+      vrm.scene.position.set(0, 0, 0);
+      baseY = vrm.scene.position.y;
+      vrm.update(0);
+      vrm.scene.updateMatrixWorld(true);
+      if (!fitAvatar()) {
+        resetReadiness();
+        onError();
+        return;
+      }
       resetReadiness();
     }, undefined, () => {
       if (!disposed) {
@@ -104,6 +124,7 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
         wasActive = true;
         resetReadiness();
         clock.getDelta();
+        fitAvatar();
       }
       if (contextLost || time - lastFrame < frameInterval) return;
       lastFrame = time;
@@ -112,8 +133,8 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
         const delta = Math.min(clock.getDelta(), 0.1);
         const elapsed = clock.elapsedTime;
         if (vrm) {
-          vrm.scene.rotation.y = Math.PI + Math.sin(elapsed * 0.22) * 0.018;
-          vrm.scene.position.y = -0.85 + Math.sin(elapsed * 0.85) * 0.006;
+          vrm.scene.rotation.y = baseRotationY + Math.sin(elapsed * 0.22) * 0.018;
+          vrm.scene.position.y = baseY + Math.sin(elapsed * 0.85) * 0.006;
           vrm.update(delta);
         }
         renderer.render(scene, camera);
@@ -127,11 +148,12 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
         return;
       }
 
-      if (!vrm) return;
+      if (!vrm || readySent) return;
       const rect = mount.getBoundingClientRect();
-      const visibleFrame = rect.width >= 32 && rect.height >= 32 && renderer.domElement.width > 0 && renderer.domElement.height > 0 && vrm.scene.visible;
+      const canvasReady = rect.width >= 32 && rect.height >= 32 && renderer.domElement.width > 0 && renderer.domElement.height > 0 && vrm.scene.visible;
+      const visibleFrame = canvasReady && isObjectMeaningfullyFramed(camera, vrm.scene, 0.55);
       stableFrames = visibleFrame ? stableFrames + 1 : 0;
-      if (!readySent && stableFrames >= avatarConfig.transition.stableFrames) {
+      if (stableFrames >= avatarConfig.transition.stableFrames) {
         readySent = true;
         onReady();
       }
