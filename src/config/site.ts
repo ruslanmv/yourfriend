@@ -5,9 +5,9 @@ export const site = {
   projectName: '3D Avatar Chatbot',
   domain: 'ruslanmv.com/yourfriend',
   repoUrl: 'https://github.com/ruslanmv/3D-Avatar-Chatbot',
-  liveDemoUrl: 'https://ruslanmv.github.io/3D-Avatar-Chatbot/',
+  liveDemoUrl: 'https://www.yourfriend.online/',
   deployUrl: 'https://vercel.com/new/clone?repository-url=https://github.com/ruslanmv/3D-Avatar-Chatbot',
-  appUrl: import.meta.env.VITE_APP_URL || 'https://ruslanmv.github.io/3D-Avatar-Chatbot/',
+  appUrl: import.meta.env.VITE_APP_URL || 'https://www.yourfriend.online/',
 };
 
 export const navItems = [
