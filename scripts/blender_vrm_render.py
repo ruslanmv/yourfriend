@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
 """
-Run inside Blender:
+Render a VRM into a transparent PNG with Blender.
 
-blender --background --python blender_vrm_render.py -- \
-  --input companion.vrm \
-  --output companion.png \
-  --width 800 \
-  --height 1100 \
-  --yaw 180
+Examples:
+
+Full body:
+  blender --background --python blender_vrm_render.py -- \
+    --input companion.vrm --output companion.png --framing full
+
+Premium landing-page portrait (keeps hands/legs out of the crop):
+  blender --background --python blender_vrm_render.py -- \
+    --input companion.vrm --output companion-portrait.png --framing portrait
+
+Face thumbnail:
+  blender --background --python blender_vrm_render.py -- \
+    --input companion.vrm --output companion-face.png --framing face
 
 For best VRM/MToon fidelity, install the VRM Add-on for Blender.
 If it is not installed, this script falls back to Blender's glTF importer.
+
+Why the old full-body extraction can show hands over the torso/thighs:
+VRM files carry their authored rest pose. Rendering that pose verbatim preserves
+whatever hand/body overlap exists in the model. For marketing thumbnails the
+cleaner solution is deliberate portrait/face framing rather than pretending the
+rest pose is a composed studio pose.
 """
 
 from __future__ import annotations
@@ -35,6 +48,12 @@ def parse_args():
     parser.add_argument("--width", type=int, default=800)
     parser.add_argument("--height", type=int, default=1100)
     parser.add_argument("--yaw", type=float, default=180.0)
+    parser.add_argument(
+        "--framing",
+        choices=("full", "portrait", "face"),
+        default="full",
+        help="Camera crop. Use portrait/face for clean marketing images that avoid hand/body overlap.",
+    )
     return parser.parse_args(argv)
 
 
@@ -133,7 +152,32 @@ def add_area_light(name, location, energy, size, target):
     return light
 
 
-def configure_scene(objects, width: int, height: int):
+def framing_values(min_v: Vector, max_v: Vector, width: int, height: int, framing: str):
+    model_height = max(max_v.z - min_v.z, 0.01)
+    model_width = max(max_v.x - min_v.x, 0.01)
+    aspect = width / height
+
+    if framing == "face":
+        # Head and shoulders. This is intentionally tighter than a passport crop
+        # so tiny UI thumbnails still read as a person rather than a full-body speck.
+        target_z = min_v.z + model_height * 0.83
+        vertical_scale = model_height * 0.30
+        horizontal_scale = model_width / max(aspect, 0.01) * 0.46
+    elif framing == "portrait":
+        # Chest-up / waist-up marketing crop. Hands that sit over the hips in the
+        # authored rest pose fall below the frame instead of becoming the focal point.
+        target_z = min_v.z + model_height * 0.70
+        vertical_scale = model_height * 0.57
+        horizontal_scale = model_width / max(aspect, 0.01) * 0.72
+    else:
+        target_z = min_v.z + model_height * 0.54
+        vertical_scale = model_height * 1.08
+        horizontal_scale = model_width / max(aspect, 0.01) * 1.08
+
+    return model_height, Vector((0.0, 0.0, target_z)), max(vertical_scale, horizontal_scale)
+
+
+def configure_scene(objects, width: int, height: int, framing: str):
     scene = bpy.context.scene
 
     min_v, max_v = mesh_bounds(objects)
@@ -146,22 +190,16 @@ def configure_scene(objects, width: int, height: int):
     )
 
     min_v, max_v = mesh_bounds(objects)
-    model_height = max(max_v.z - min_v.z, 0.01)
-    model_width = max(max_v.x - min_v.x, 0.01)
+    model_height, target, ortho_scale = framing_values(min_v, max_v, width, height, framing)
 
-    target = Vector((0.0, 0.0, min_v.z + model_height * 0.54))
-
-    # Orthographic camera gives a clean, poster-like full-body cutout.
+    # Orthographic camera gives a clean, distortion-free poster cutout.
     camera_data = bpy.data.cameras.new("PosterCamera")
     camera = bpy.data.objects.new("PosterCamera", camera_data)
     bpy.context.collection.objects.link(camera)
     scene.camera = camera
 
     camera_data.type = "ORTHO"
-    aspect = width / height
-    vertical_scale = model_height * 1.08
-    horizontal_required_vertical_scale = model_width / max(aspect, 0.01) * 1.08
-    camera_data.ortho_scale = max(vertical_scale, horizontal_required_vertical_scale)
+    camera_data.ortho_scale = ortho_scale
     camera.location = Vector((0.0, -max(model_height * 2.2, 3.0), target.z))
     look_at(camera, target)
 
@@ -214,11 +252,11 @@ def main():
     clean_scene()
     imported = import_vrm(input_path)
     rotate_roots(imported, args.yaw)
-    scene = configure_scene(imported, args.width, args.height)
+    scene = configure_scene(imported, args.width, args.height, args.framing)
     scene.render.filepath = str(output_path)
 
     bpy.ops.render.render(write_still=True)
-    print(f"Rendered {output_path}")
+    print(f"Rendered {output_path} ({args.framing} framing)")
 
 
 if __name__ == "__main__":
