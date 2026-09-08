@@ -3,8 +3,9 @@ const projectAsset = (path: string) => `https://raw.githubusercontent.com/ruslan
 
 export const avatarConfig = {
   enableLiveVRM: import.meta.env.VITE_ENABLE_LIVE_VRM === 'true',
-  // Same CC0 VRM shipped by the open-source project that this page showcases.
-  model: projectAsset('vendor/avatars/AvatarSample_A.vrm'),
+  // Vendored locally so the landing page does not depend on a cross-repository
+  // binary fetch at runtime. Other verified redesign models live beside it.
+  model: asset('avatar/models/cc0/AvatarSample_A.vrm'),
   // Real capture from the 3D Avatar Chatbot build. The old vector portraits remain
   // only as emergency fallbacks if the remote project asset cannot be loaded.
   posters: {
@@ -19,6 +20,7 @@ export const avatarConfig = {
     repository: 'https://github.com/ruslanmv/3D-Avatar-Chatbot',
     avatar: 'AvatarSample A',
     license: 'CC0',
+    localModel: 'public/avatar/models/cc0/AvatarSample_A.vrm',
   },
   performance: {
     desktopFPS: 30,
