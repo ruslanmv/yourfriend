@@ -11,8 +11,10 @@ export function AvatarPoster({ theme, hidden }: { theme: Theme; hidden: boolean 
       decoding="async"
       fetchPriority="high"
       onError={(event) => {
-        const fallback = avatarConfig.fallbackPosters[theme];
-        if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
+        const image = event.currentTarget;
+        if (image.dataset.fallbackApplied === 'true') return;
+        image.dataset.fallbackApplied = 'true';
+        image.src = avatarConfig.fallbackPosters[theme];
       }}
     />
   </picture>;
