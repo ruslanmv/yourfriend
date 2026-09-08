@@ -12,6 +12,9 @@ export const avatarConfig = {
     light: projectAsset('assets/companion-fullscreen.png'),
     dark: projectAsset('assets/companion-fullscreen.png'),
   },
+  // Dedicated square companion portrait for close-up motion/behavior previews.
+  // This avoids trying to extract a tiny face from the full application screenshot.
+  motionPortrait: projectAsset('assets/companion-512.png'),
   fallbackPosters: {
     light: asset('avatar/posters/companion-light.svg'),
     dark: asset('avatar/posters/companion-dark.svg'),
