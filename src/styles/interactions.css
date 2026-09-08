@@ -30,14 +30,39 @@
 .hero-avatar.is-live .avatar-canvas { opacity: 1; }
 .hero-avatar:not(.is-live) .avatar-canvas { opacity: 0; }
 
-.motion-thumbs { gap: 10px; }
-.motion-thumb { width: 78px; height: 70px; place-items: center; background: color-mix(in srgb, var(--surface) 88%, transparent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.035); }
-.motion-thumb img { width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 18%; filter: saturate(1.04) contrast(1.03); }
+/* On tablet/desktop the companion belongs to the second hero grid column rather
+   than being anchored to the bottom edge of the hero. The Three.js camera then
+   fits the VRM inside this centered stage using the model's actual bounds. */
+@media (min-width: 761px) {
+  .hero__content { grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); column-gap: clamp(18px, 3vw, 56px); }
+  .hero-avatar {
+    position: relative;
+    grid-column: 2;
+    grid-row: 1;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: 700px;
+    height: clamp(520px, 62vw, 700px);
+    align-self: center;
+    justify-self: end;
+  }
+  .avatar-poster img { object-position: center center; }
+}
+
+/* The motion diagram uses a dedicated close-up companion portrait instead of
+   repeatedly zooming into a full application screenshot. */
+.motion-preview { width: min(100%, 360px); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.motion-portrait { width: 152px; aspect-ratio: 1; overflow: hidden; border: 1px solid var(--surface-border); border-radius: 22px; background: color-mix(in srgb, var(--surface) 90%, transparent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 14px 36px rgba(10,24,48,.12); }
+.motion-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 34%; transform: scale(1.08); }
+.motion-sources { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.motion-sources span { padding: 5px 8px; border: 1px solid var(--surface-border); border-radius: 999px; background: color-mix(in srgb, var(--surface) 82%, transparent); color: var(--text-soft); font-size: .68rem; }
 
 @media (max-width: 1040px) and (min-width: 761px) {
   .hero__stage { grid-template-rows: minmax(620px, auto) auto; }
   .hero__content { min-height: 620px; }
   .hero__scene-row { padding-top: 32px; padding-bottom: 104px; }
+  .hero-avatar { max-width: 560px; height: clamp(500px, 62vw, 620px); }
 }
 
 @media (max-width: 760px) {
@@ -51,6 +76,7 @@
   .ambient__thumbs::-webkit-scrollbar { display: none; }
   .ambient__step { flex: 0 0 36px; }
   .ambient__status { max-width: 100%; font-size: .68rem; flex-wrap: wrap; }
-  .motion-thumbs { width: 100%; justify-content: center; overflow: visible; }
-  .motion-thumb { width: 64px; height: 58px; flex: 0 0 64px; }
+  .motion-preview { width: 100%; align-items: flex-start; }
+  .motion-portrait { width: 132px; align-self: center; }
+  .motion-sources { justify-content: center; align-self: stretch; }
 }
