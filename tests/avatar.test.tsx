@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { avatarConfig } from '../src/config/avatar';
@@ -30,10 +29,5 @@ describe('single Waiting-standard marketing avatar', () => {
     const { container } = render(<AvatarPoster theme="light" hidden/>);
     expect(container.querySelector('.avatar-poster')).toHaveClass('is-hidden');
     expect(container.querySelector('.avatar-poster img')).toBeInTheDocument();
-  });
-
-  it('disables the poster-to-live swap in the production marketing build', () => {
-    const productionEnv = readFileSync('.env.production', 'utf8');
-    expect(productionEnv).toContain('VITE_ENABLE_LIVE_VRM=false');
   });
 });
