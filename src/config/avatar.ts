@@ -1,17 +1,21 @@
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
-const projectAsset = (path: string) => `https://raw.githubusercontent.com/ruslanmv/3D-Avatar-Chatbot/master/${path}`;
+
+const waitingStandardPoster = asset('avatar/posters/companion-waiting-standard.png');
 
 export const avatarConfig = {
   enableLiveVRM: import.meta.env.VITE_ENABLE_LIVE_VRM === 'true',
-  // Vendored locally so the landing page does not depend on a cross-repository
-  // binary fetch at runtime. Other verified redesign models live beside it.
+  // Vendored locally so redesign work can still use the same CC0 VRM model.
   model: asset('avatar/models/cc0/AvatarSample_A.vrm'),
-  // Real capture from the 3D Avatar Chatbot build. The old vector portraits remain
-  // only as emergency fallbacks if the remote project asset cannot be loaded.
+  // One canonical marketing render generated from the real application after
+  // applying vendor/animations/vrma/waiting-standard.vrma. Using the same asset
+  // in both themes avoids the previous screenshot -> T-pose visual jump.
   posters: {
-    light: projectAsset('assets/companion-fullscreen.png'),
-    dark: projectAsset('assets/companion-fullscreen.png'),
+    light: waitingStandardPoster,
+    dark: waitingStandardPoster,
   },
+  // Reuse the same authored pose in the animation/behavior section so the site
+  // presents one coherent companion rather than unrelated avatar screenshots.
+  motionPortrait: waitingStandardPoster,
   fallbackPosters: {
     light: asset('avatar/posters/companion-light.svg'),
     dark: asset('avatar/posters/companion-dark.svg'),
@@ -21,6 +25,8 @@ export const avatarConfig = {
     avatar: 'AvatarSample A',
     license: 'CC0',
     localModel: 'public/avatar/models/cc0/AvatarSample_A.vrm',
+    poster: 'public/avatar/posters/companion-waiting-standard.png',
+    animation: 'vendor/animations/vrma/waiting-standard.vrma',
   },
   performance: {
     desktopFPS: 30,
