@@ -6,10 +6,14 @@ export function AvatarPoster({ theme, hidden }: { theme: Theme; hidden: boolean 
     <img
       src={avatarConfig.posters[theme]}
       alt=""
-      width="800"
-      height="1100"
+      width="824"
+      height="1830"
       decoding="async"
       fetchPriority="high"
+      onError={(event) => {
+        const fallback = avatarConfig.fallbackPosters[theme];
+        if (event.currentTarget.src !== fallback) event.currentTarget.src = fallback;
+      }}
     />
   </picture>;
 }
