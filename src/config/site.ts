@@ -2,34 +2,37 @@ import type { Experience } from '../types';
 
 export const site = {
   name: 'YourFriend',
-  domain: 'yourfriend.online',
-  salesEmail: import.meta.env.VITE_SALES_EMAIL || 'hello@yourfriend.online',
-  appUrl: import.meta.env.VITE_APP_URL || 'https://www.yourfriend.online/',
+  projectName: '3D Avatar Chatbot',
+  domain: 'ruslanmv.com/yourfriend',
+  repoUrl: 'https://github.com/ruslanmv/3D-Avatar-Chatbot',
+  liveDemoUrl: 'https://ruslanmv.github.io/3D-Avatar-Chatbot/',
+  deployUrl: 'https://vercel.com/new/clone?repository-url=https://github.com/ruslanmv/3D-Avatar-Chatbot',
+  appUrl: import.meta.env.VITE_APP_URL || 'https://ruslanmv.github.io/3D-Avatar-Chatbot/',
 };
 
 export const navItems = [
-  { label: 'Product', href: '#product' },
+  { label: 'Project', href: '#product' },
   { label: 'Experiences', href: '#experiences' },
   { label: 'Privacy', href: '#privacy' },
-  { label: 'Pricing', href: '#pricing' },
+  { label: 'Open Source', href: '#open-source' },
   { label: 'Core', href: '#core' },
 ];
 
 export const experiences: Experience[] = [
   {
-    id: 'watch', icon: 'watch', title: 'Watch Together',
-    body: 'Share shows, movies, and videos. YourFriend reacts, remembers, and stays in the moment with you.',
+    id: 'watch', icon: 'watch', title: 'Together Mode',
+    body: 'Watch, listen, focus, journey, coach, or simply share a quiet scene with a behavior-aware 3D companion.',
   },
   {
-    id: 'screen', icon: 'screen', title: 'Screen Copilot',
-    body: 'A calm assistant on your screen. Explain, summarize, find, and get things done—together.',
+    id: 'screen', icon: 'screen', title: 'Companion Mode',
+    body: 'Pop the live avatar into a floating, resizable companion window and keep voice or text conversation beside your work.',
   },
   {
-    id: 'gaming', icon: 'game', title: 'Gaming Co-host',
-    body: 'Strategy, banter, hype. YourFriend is in your corner—aware of the game and the moment.',
+    id: 'gaming', icon: 'game', title: 'Voice + Multi-AI',
+    body: 'Connect OpenAI, Claude, Watsonx, Ollama, or OllaBridge with speech-to-text, text-to-speech, lip sync, and expressions.',
   },
   {
-    id: 'home', icon: 'home', title: 'Embodied HomePilot',
-    body: 'Your digital tools become embodied presence—helpful when you ask and quiet when you do not.',
+    id: 'home', icon: 'home', title: 'VR + AR Presence',
+    body: 'Step into WebXR VR or place the avatar in your room with AR hit testing, passthrough grounding, gaze, and spatial presence.',
   },
 ];

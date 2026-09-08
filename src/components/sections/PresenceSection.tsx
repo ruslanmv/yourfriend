@@ -1,15 +1,15 @@
 import { Icon } from '../ui/Icon';
 
 const benefits = [
-  ['sound', 'Quiet by design', 'Calm presence that adapts to you. Comfortable silence is part of the experience.'],
-  ['person', 'Embodied insight', 'Thoughtful responses grounded in context, memory, and what you are experiencing together.'],
-  ['brain', 'Memory that respects you', 'Remembers the right things for the right reasons—so every moment feels continuous.'],
-  ['leaf', 'Restraint is intelligent', 'Knows when to hold back, when to guide, and when to simply be there.'],
+  ['sound', 'Procedural motion', 'Breathing, blinking, gaze, head sway, and subtle body motion keep the character alive without a visibly repeating loop.'],
+  ['person', 'Expressions + lip sync', 'VRM expressions, speech-driven mouth shapes, and emotion-aware animation make conversation visually responsive.'],
+  ['brain', 'Face tracking', 'MediaPipe-powered webcam tracking can mirror blinks, gaze, mouth movement, and expressions onto supported avatars.'],
+  ['leaf', 'Behavior Director', 'A layered behavior engine chooses reflexes, gestures, and companion actions while remaining optional and auditable.'],
 ] as const;
 
 export function PresenceSection() {
   return <section className="section section--presence" id="presence"><div className="container presence-layout">
-    <div className="section-intro"><div className="kicker">Presence over chatter</div><h2>Designed to know<br/>when to <em>speak.</em></h2><p>YourFriend listens without interrupting, notices the moment, remembers what matters, and responds with restraint.</p></div>
+    <div className="section-intro"><div className="kicker">A real character engine</div><h2>Designed to feel<br/><em>alive.</em></h2><p>The open-source runtime combines animation, expressions, gaze, voice, and behavior systems instead of presenting a static chatbot portrait.</p></div>
     <div className="benefit-grid">{benefits.map(([icon,title,body]) => <div className="benefit" key={title}><span className="icon-orb icon-orb--small"><Icon name={icon}/></span><div><h3>{title}</h3><p>{body}</p></div></div>)}</div>
   </div></section>;
 }
