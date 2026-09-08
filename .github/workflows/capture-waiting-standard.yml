@@ -3,7 +3,8 @@ name: Capture Waiting-standard hero poster
 on:
   push:
     branches:
-      - fix/vrm-framing-live-demo
+      - 'fix/**'
+      - 'feat/**'
     paths:
       - scripts/capture_waiting_standard.py
       - .github/workflows/capture-waiting-standard.yml
@@ -33,6 +34,28 @@ jobs:
       - name: Capture Waiting-standard avatar
         run: python scripts/capture_waiting_standard.py
 
+      - name: Verify PNG transparency
+        run: |
+          python - <<'PY'
+          from PIL import Image
+
+          path = 'public/avatar/posters/companion-waiting-standard.png'
+          image = Image.open(path).convert('RGBA')
+          alpha = image.getchannel('A')
+          width, height = image.size
+          corners = [
+              alpha.getpixel((0, 0)),
+              alpha.getpixel((width - 1, 0)),
+              alpha.getpixel((0, height - 1)),
+              alpha.getpixel((width - 1, height - 1)),
+          ]
+          transparent = sum(1 for value in alpha.getdata() if value <= 8)
+          ratio = transparent / (width * height)
+          print(f'corners={corners} transparent_ratio={ratio:.3f}')
+          if min(corners) > 8 or ratio < 0.10:
+              raise SystemExit('Poster background is not genuinely transparent')
+          PY
+
       - name: Upload generated poster
         uses: actions/upload-artifact@v4
         with:
@@ -48,6 +71,7 @@ jobs:
             echo "Waiting-standard poster is unchanged"
             exit 0
           fi
-          git commit -m "Generate Waiting-standard companion poster"
-          git pull --rebase origin fix/vrm-framing-live-demo
-          git push origin HEAD:fix/vrm-framing-live-demo
+          git commit -m "Generate transparent Waiting-standard companion poster"
+          BRANCH="${GITHUB_REF_NAME}"
+          git pull --rebase origin "$BRANCH"
+          git push origin "HEAD:$BRANCH"
