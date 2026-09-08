@@ -1,6 +1,11 @@
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
-const waitingStandardPoster = asset('avatar/posters/companion-waiting-standard.png');
+// The poster was regenerated with a genuinely transparent RGBA background in
+// PR #23. Keep a revision token on the public-file URL so browsers/CDNs cannot
+// reuse the earlier black-background response that had the same pathname.
+const waitingStandardPoster = asset(
+  'avatar/posters/companion-waiting-standard.png?v=transparent-20260908-1',
+);
 
 export const avatarConfig = {
   enableLiveVRM: import.meta.env.VITE_ENABLE_LIVE_VRM === 'true',
@@ -26,6 +31,7 @@ export const avatarConfig = {
     license: 'CC0',
     localModel: 'public/avatar/models/cc0/AvatarSample_A.vrm',
     poster: 'public/avatar/posters/companion-waiting-standard.png',
+    posterRevision: 'transparent-20260908-1',
     animation: 'vendor/animations/vrma/waiting-standard.vrma',
   },
   performance: {
