@@ -4,7 +4,6 @@ export const site = {
   name: 'YourFriend',
   projectName: '3D Avatar Chatbot',
   domain: 'ruslanmv.com/yourfriend',
-  salesEmail: import.meta.env.VITE_SALES_EMAIL || 'hello@yourfriend.online',
   repoUrl: 'https://github.com/ruslanmv/3D-Avatar-Chatbot',
   liveDemoUrl: 'https://ruslanmv.github.io/3D-Avatar-Chatbot/',
   deployUrl: 'https://vercel.com/new/clone?repository-url=https://github.com/ruslanmv/3D-Avatar-Chatbot',
