@@ -75,3 +75,9 @@
   .ambient__controls { bottom: 38px; }
   .experience-card { min-height: 220px; }
 }
+
+/* Keep the transparent poster unchanged; only lower its hero stage so the face
+   clears the fixed header on tablet/desktop. Mobile keeps its own framing. */
+@media (min-width: 761px) {
+  .hero-avatar { bottom: -52px; }
+}
