@@ -8,7 +8,7 @@ export function AmbientSlider({ theme }: { theme: Theme }) {
   const { index, paused, goTo } = useAmbientRotation(ambientScenes, reducedMotion);
   const move = (delta: number) => goTo(index + delta, true);
 
-  return <div className="ambient" aria-label="Ambient scene selector">
+  return <>
     <div className="ambient__layers" aria-hidden="true">
       {ambientScenes.map((scene, i) => <div key={scene.id} className={`ambient__layer ${i === index ? 'is-active' : ''}`} style={{ backgroundImage: `url(${theme === 'dark' ? scene.darkImage : scene.lightImage})`, backgroundPosition: scene.focalPoint || 'center', transitionDuration: `${reducedMotion ? 0 : scene.transitionDuration}ms` }} />)}
     </div>
@@ -28,5 +28,5 @@ export function AmbientSlider({ theme }: { theme: Theme }) {
         </span>
       </div>
     </div>
-  </div>;
+  </>;
 }

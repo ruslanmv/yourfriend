@@ -1,7 +1,15 @@
-.ambient { z-index: auto; pointer-events: none; }
+/* Hero layout stability: the scene selector owns a normal-flow row instead of
+   floating over CTA/trust copy. The background layers remain absolutely
+   positioned against .hero, while controls reserve real vertical space. */
+.hero { display: block; min-height: 920px; }
+.hero__stage { display: grid; grid-template-rows: minmax(680px, auto) auto; min-height: calc(920px - var(--header-h) - 66px); }
+.hero__content { width: 100%; min-height: 680px; }
+.hero__copy { padding-bottom: 0; }
+.hero__scene-row { min-width: 0; padding: 32px 0 112px; }
+
 .ambient__layers { z-index: 0; pointer-events: none; }
-.ambient__controls { z-index: 8; pointer-events: auto; }
-.ambient__thumb-row { display: flex; align-items: center; gap: 8px; }
+.ambient__controls { position: relative; z-index: 8; left: auto; right: auto; bottom: auto; width: fit-content; max-width: 100%; pointer-events: auto; }
+.ambient__thumb-row { display: flex; align-items: center; gap: 8px; max-width: 100%; }
 .ambient__step { width: 36px; height: 36px; border: 1px solid var(--surface-border); border-radius: 10px; display: grid; place-items: center; background: color-mix(in srgb, var(--surface-strong) 72%, transparent); color: var(--text); font-size: 1.35rem; line-height: 1; cursor: pointer; backdrop-filter: blur(12px); transition: transform .2s ease, border-color .2s ease, background .2s ease; }
 .ambient__step:hover, .ambient__step:focus-visible { transform: translateY(-1px); border-color: var(--accent); background: color-mix(in srgb, var(--surface-strong) 88%, transparent); }
 .ambient__thumb { position: relative; min-width: 62px; }
@@ -13,17 +21,36 @@
 .ambient__dots button:hover, .ambient__dots button:focus-visible { opacity: .9; transform: scale(1.35); }
 .ambient__dots button.is-active { background: var(--accent); opacity: 1; transform: scale(1.2); }
 
+/* Presence is static-first. The poster always stays mounted below WebGL; state
+   only crossfades opacity, so a loader/context/render failure can restore it
+   without ever leaving an empty companion area. */
+.avatar-poster { transition: opacity var(--avatar-transition-ms, 900ms) ease; }
+.avatar-canvas { opacity: 0; transition: opacity var(--avatar-transition-ms, 900ms) ease; }
+.avatar-canvas canvas { display: block; width: 100%; height: 100%; }
+.hero-avatar.is-live .avatar-canvas { opacity: 1; }
+.hero-avatar:not(.is-live) .avatar-canvas { opacity: 0; }
+
 .motion-thumbs { gap: 10px; }
 .motion-thumb { width: 78px; height: 70px; place-items: center; background: color-mix(in srgb, var(--surface) 88%, transparent); box-shadow: inset 0 0 0 1px rgba(255,255,255,.035); }
 .motion-thumb img { width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 18%; filter: saturate(1.04) contrast(1.03); }
 
+@media (max-width: 1040px) and (min-width: 761px) {
+  .hero__stage { grid-template-rows: minmax(620px, auto) auto; }
+  .hero__content { min-height: 620px; }
+  .hero__scene-row { padding-top: 32px; padding-bottom: 104px; }
+}
+
 @media (max-width: 760px) {
-  .ambient__controls { left: 15px; right: 15px; bottom: 20px; width: auto; }
+  .hero { min-height: 0; }
+  .hero__stage { grid-template-rows: auto auto; min-height: 0; }
+  .hero__content { min-height: 840px; }
+  .hero__scene-row { padding: 32px 0 64px; }
+  .ambient__controls { position: relative; left: auto; right: auto; bottom: auto; width: 100%; max-width: 100%; }
   .ambient__thumb-row { width: 100%; }
-  .ambient__thumbs { flex: 1; overflow-x: auto; scrollbar-width: none; }
+  .ambient__thumbs { flex: 1; min-width: 0; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
   .ambient__thumbs::-webkit-scrollbar { display: none; }
   .ambient__step { flex: 0 0 36px; }
-  .ambient__status { max-width: 100%; font-size: .68rem; }
+  .ambient__status { max-width: 100%; font-size: .68rem; flex-wrap: wrap; }
   .motion-thumbs { width: 100%; justify-content: center; overflow: visible; }
   .motion-thumb { width: 64px; height: 58px; flex: 0 0 64px; }
 }
