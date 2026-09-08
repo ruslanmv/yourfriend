@@ -49,4 +49,5 @@ jobs:
             exit 0
           fi
           git commit -m "Generate Waiting-standard companion poster"
+          git pull --rebase origin fix/vrm-framing-live-demo
           git push origin HEAD:fix/vrm-framing-live-demo
