@@ -1,0 +1,107 @@
+{
+  "checked_at_utc": "2026-09-07T00:00:00Z",
+  "policy": {
+    "downloadable": true,
+    "avatar_use": "allow",
+    "corporate_commercial_use": "allow",
+    "individual_commercial_use": "allow",
+    "redistribution": "allow",
+    "modification": "allow",
+    "modified_model_redistribution": "allow",
+    "attribution": "not_required",
+    "sexual_expression": "allow",
+    "notes": "Candidates were selected from VRoid Hub models matching the strict permissive filter. School-age/minor-coded models are intentionally excluded from fan-service recommendations. Re-check the live license before every download/render because creators can change conditions."
+  },
+  "candidates": [
+    {
+      "slug": "avatar-sample-o",
+      "name": "AvatarSample_O",
+      "model_id": "3390783334862270831",
+      "url": "https://hub.vroid.com/en/characters/2082401201932290880/models/3390783334862270831",
+      "presentation": "feminine",
+      "recommended_for": ["work", "casual", "brand-default"],
+      "priority": 1,
+      "notes": "Strong neutral baseline and the requested initial YourFriend candidate."
+    },
+    {
+      "slug": "model-girl",
+      "name": "Model Girl",
+      "model_id": "3353341336249445361",
+      "url": "https://hub.vroid.com/en/characters/7589991019940102131/models/3353341336249445361",
+      "presentation": "feminine",
+      "recommended_for": ["work", "modern", "casual"],
+      "priority": 2,
+      "notes": "Clean modern look; good candidate for a professional companion landing page."
+    },
+    {
+      "slug": "celeste",
+      "name": "Celeste",
+      "model_id": "5295951488219248595",
+      "url": "https://hub.vroid.com/en/characters/6685370406885124983/models/5295951488219248595",
+      "presentation": "feminine",
+      "recommended_for": ["premium", "fantasy", "fun", "fan-service"],
+      "priority": 3,
+      "notes": "White-haired angel styling with a polished premium/fantasy look."
+    },
+    {
+      "slug": "free-vtuber-model",
+      "name": "Free To Use Vtuber Model",
+      "model_id": "3345334325262507560",
+      "url": "https://hub.vroid.com/en/characters/5737518450371164595/models/3345334325262507560",
+      "presentation": "feminine",
+      "recommended_for": ["fun", "fan-service", "night-mode"],
+      "priority": 4,
+      "notes": "Darker fashion styling; creator explicitly says free to use with no credit needed."
+    },
+    {
+      "slug": "jeanne-adelaide",
+      "name": "Jeanne-Adélaïde",
+      "model_id": "7169770912101796294",
+      "url": "https://hub.vroid.com/en/characters/7699621891420705936/models/7169770912101796294",
+      "presentation": "feminine",
+      "recommended_for": ["premium", "formal", "fantasy", "fan-service"],
+      "priority": 5,
+      "notes": "Adult historical character with elaborate formal styling."
+    },
+    {
+      "slug": "helen",
+      "name": "Helen",
+      "model_id": "3591428810231326281",
+      "url": "https://hub.vroid.com/en/characters/7682221189425995874/models/3591428810231326281",
+      "presentation": "feminine",
+      "recommended_for": ["fun", "fantasy", "casual"],
+      "priority": 6,
+      "notes": "Stylized fantasy look with strong facial presence."
+    },
+    {
+      "slug": "auralithis",
+      "name": "Auralithis",
+      "model_id": "1332383967291184475",
+      "url": "https://hub.vroid.com/en/characters/7336219413778584953/models/1332383967291184475",
+      "presentation": "masculine",
+      "recommended_for": ["premium", "fantasy", "fun", "fan-service"],
+      "priority": 7,
+      "notes": "Long-haired fantasy male model; useful for a more dramatic male companion option."
+    },
+    {
+      "slug": "azary-sheelal",
+      "name": "Azary Sheelal",
+      "model_id": "2128557970269162780",
+      "url": "https://hub.vroid.com/en/characters/3029694345334753371/models/2128557970269162780",
+      "presentation": "masculine-androgynous",
+      "recommended_for": ["casual", "streetwear", "fun"],
+      "priority": 8,
+      "notes": "Casual darker styling; good alternate to the more formal/fantasy options."
+    },
+    {
+      "slug": "boy-g",
+      "name": "男の子G / Boy G",
+      "model_id": "892080065338290893",
+      "url": "https://hub.vroid.com/en/characters/4858331292246007456/models/892080065338290893",
+      "presentation": "masculine",
+      "recommended_for": ["work", "casual", "streetwear"],
+      "priority": 9,
+      "notes": "Simple hoodie styling. Keep this one out of fan-service treatment because the title is youth-coded."
+    }
+  ]
+}
