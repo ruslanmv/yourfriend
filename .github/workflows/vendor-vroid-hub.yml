@@ -1,0 +1,70 @@
+name: Vendor licensed VRoid Hub models
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate:
+        description: "Candidate slug from scripts/vroid_candidates.json, or 'all'"
+        required: true
+        default: "avatar-sample-o"
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install downloader dependencies
+        run: python -m pip install --disable-pip-version-check requests
+
+      - name: Download and verify licensed candidate
+        env:
+          VROID_ACCESS_TOKEN: ${{ secrets.VROID_ACCESS_TOKEN }}
+          CANDIDATE: ${{ inputs.candidate }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${VROID_ACCESS_TOKEN:-}" ]; then
+            echo "VROID_ACCESS_TOKEN repository secret is required." >&2
+            exit 2
+          fi
+          if [ "$CANDIDATE" = "all" ]; then
+            python scripts/download_vroid_candidates.py --all
+          else
+            python scripts/download_vroid_candidates.py --only "$CANDIDATE"
+          fi
+
+      - name: Verify downloaded files without network
+        env:
+          CANDIDATE: ${{ inputs.candidate }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$CANDIDATE" = "all" ]; then
+            python scripts/download_vroid_candidates.py --all --check-only
+          else
+            python scripts/download_vroid_candidates.py --only "$CANDIDATE" --check-only
+          fi
+
+      - name: Commit licensed VRM files and license snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/avatar/models/vroid-hub
+          if git diff --cached --quiet; then
+            echo "No VRoid Hub model changes to commit."
+            exit 0
+          fi
+          git commit -m "Vendor verified VRoid Hub avatar models"
+          git push

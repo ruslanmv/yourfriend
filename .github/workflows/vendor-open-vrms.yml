@@ -1,0 +1,51 @@
+name: Vendor open CC0 VRM models
+
+on:
+  push:
+    branches: [feature/open-source-showcase]
+    paths:
+      - .github/workflows/vendor-open-vrms.yml
+      - scripts/vendor_open_vrms.py
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vendor-open-vrms-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  vendor:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Download and validate redesign models
+        run: python scripts/vendor_open_vrms.py --all
+
+      - name: Verify vendored files again
+        run: python scripts/vendor_open_vrms.py --all --check-only
+
+      - name: Commit vendored VRMs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/avatar/models/cc0
+          if git diff --cached --quiet; then
+            echo "VRM set already up to date."
+            exit 0
+          fi
+          git commit -m "Vendor verified CC0 VRM redesign models"
+          git push origin HEAD:${GITHUB_REF_NAME}
