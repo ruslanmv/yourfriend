@@ -75,3 +75,10 @@
   .ambient__controls { bottom: 38px; }
   .experience-card { min-height: 220px; }
 }
+
+/* Keep the transparent Waiting-standard poster clear of the fixed header.
+   Translate the avatar stage rather than the image itself so the poster's
+   breathing animation and transparency remain unchanged. */
+@media (min-width: 761px) {
+  .hero-avatar { transform: translateY(clamp(48px, 6vh, 72px)); }
+}
