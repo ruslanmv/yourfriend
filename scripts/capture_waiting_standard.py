@@ -4,8 +4,12 @@
 This script intentionally drives the public/open-source application rather than
 maintaining a second pose implementation in the marketing site. It waits for the
 real ViewerEngine + clip loader, plays `waiting-standard.vrma`, isolates the
-avatar from scene meshes/background, and exports a transparent poster suitable
-for the YourFriend hero.
+avatar from scene meshes/background, freezes the rendered pose, and exports the
+WebGL canvas' own RGBA PNG buffer.
+
+Reading the raw canvas buffer is important: an element screenshot can composite
+transparent WebGL pixels against the app's black viewer/container and bake that
+black rectangle into the poster.
 
 Usage:
     pip install playwright pillow
@@ -20,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import base64
 from pathlib import Path
 
 from PIL import Image
@@ -30,9 +35,34 @@ DEFAULT_CLIP = "vendor/animations/vrma/waiting-standard.vrma"
 DEFAULT_OUTPUT = Path("public/avatar/posters/companion-waiting-standard.png")
 
 
+def assert_transparent_background(image: Image.Image, label: str) -> None:
+    """Fail fast if the capture accidentally contains an opaque viewer background."""
+    rgba = image.convert("RGBA")
+    alpha = rgba.getchannel("A")
+    width, height = rgba.size
+
+    corners = (
+        alpha.getpixel((0, 0)),
+        alpha.getpixel((width - 1, 0)),
+        alpha.getpixel((0, height - 1)),
+        alpha.getpixel((width - 1, height - 1)),
+    )
+    transparent_pixels = sum(1 for value in alpha.getdata() if value <= 8)
+    transparent_ratio = transparent_pixels / float(width * height)
+
+    if min(corners) > 8 or transparent_ratio < 0.10:
+        raise RuntimeError(
+            f"{label} is not genuinely transparent: corners={corners}, "
+            f"transparent_ratio={transparent_ratio:.3f}. Refusing to publish a "
+            "poster with a baked viewer/background rectangle."
+        )
+
+
 def normalize_transparent_poster(source: Path, output: Path, width: int, height: int) -> None:
     """Trim transparent margins and place the avatar on a fixed transparent canvas."""
     image = Image.open(source).convert("RGBA")
+    assert_transparent_background(image, "Raw WebGL capture")
+
     alpha = image.getchannel("A")
     bbox = alpha.getbbox()
     if not bbox:
@@ -52,6 +82,8 @@ def normalize_transparent_poster(source: Path, output: Path, width: int, height:
     # Keep a little more air above the head than below the feet.
     y = max(0, height - resized.height - int(height * 0.025))
     poster.alpha_composite(resized, (x, y))
+    assert_transparent_background(poster, "Normalized poster")
+
     output.parent.mkdir(parents=True, exist_ok=True)
     poster.save(output, optimize=True)
 
@@ -92,7 +124,6 @@ async def capture(args: argparse.Namespace) -> None:
                 const viewer = window.NEXUS_VIEWER;
                 const root = viewer.avatarManager.currentRoot;
 
-                // Full-body framing before the clip starts.
                 if (window.NEXUS_CAMERA_PRESETS?.transitionToFullBody) {
                     window.NEXUS_CAMERA_PRESETS.transitionToFullBody(0);
                 } else if (viewer.frameObject) {
@@ -112,14 +143,18 @@ async def capture(args: argparse.Namespace) -> None:
         # lands in a calm section of the ~11.7 s Waiting-standard loop.
         await page.wait_for_timeout(args.pose_ms)
 
-        # Isolate the avatar while retaining the app's authored lights and
-        # environment lighting. ViewerEngine is alpha-enabled, so this produces
-        # a true transparent canvas rather than a black rectangle.
-        await page.evaluate(
+        # Freeze the current frame, isolate the avatar, render once with an
+        # alpha-zero clear, and read the WebGL canvas' own PNG bytes. This avoids
+        # Playwright/DOM compositing the transparent canvas over the app's black
+        # viewer background.
+        data_url = await page.evaluate(
             """() => {
                 const viewer = window.NEXUS_VIEWER;
                 const root = viewer?.avatarManager?.currentRoot;
                 if (!viewer || !root) throw new Error('Avatar viewer is unavailable');
+
+                // Freeze the exact Waiting-standard frame used for the poster.
+                viewer.renderer.setAnimationLoop(null);
 
                 const keep = new Set();
                 root.traverse((object) => keep.add(object));
@@ -131,34 +166,25 @@ async def capture(args: argparse.Namespace) -> None:
                 viewer.scene.background = null;
                 viewer.renderer.setClearColor(0x000000, 0);
                 viewer.renderer.setClearAlpha?.(0);
+                viewer.renderer.clear(true, true, true);
                 viewer.renderer.render(viewer.scene, viewer.camera);
+
+                const canvas = viewer.renderer.domElement;
+                canvas.style.background = 'transparent';
+                return canvas.toDataURL('image/png');
             }"""
         )
-        await page.wait_for_timeout(250)
 
-        canvases = page.locator("canvas")
-        count = await canvases.count()
-        best_index = None
-        best_area = 0.0
-        for index in range(count):
-            canvas = canvases.nth(index)
-            box = await canvas.bounding_box()
-            if not box:
-                continue
-            area = box["width"] * box["height"]
-            if area > best_area:
-                best_area = area
-                best_index = index
+        if not data_url or not data_url.startswith("data:image/png;base64,"):
+            raise RuntimeError("Viewer did not return a PNG data URL")
 
-        if best_index is None:
-            raise RuntimeError("No visible WebGL canvas found")
-
-        await canvases.nth(best_index).screenshot(path=str(raw_output), omit_background=True)
+        _, encoded = data_url.split(",", 1)
+        raw_output.write_bytes(base64.b64decode(encoded))
         await browser.close()
 
     normalize_transparent_poster(raw_output, args.output, args.width, args.height)
     raw_output.unlink(missing_ok=True)
-    print(f"Captured Waiting-standard poster: {args.output}")
+    print(f"Captured transparent Waiting-standard poster: {args.output}")
 
 
 def parse_args() -> argparse.Namespace:
