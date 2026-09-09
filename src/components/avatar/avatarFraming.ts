@@ -13,8 +13,8 @@ const finiteVector = (value: THREE.Vector3) => Number.isFinite(value.x) && Numbe
 export function fitCameraToObject(
   camera: THREE.PerspectiveCamera,
   object: THREE.Object3D,
-  padding = 1.14,
-  verticalBias = 0.03,
+  padding = 1.2,
+  verticalBias = 0.04,
 ): AvatarFrameResult | null {
   object.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(object);
