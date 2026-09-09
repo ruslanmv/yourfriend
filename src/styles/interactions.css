@@ -30,23 +30,23 @@
 .hero-avatar.is-live .avatar-canvas { opacity: 1; }
 .hero-avatar:not(.is-live) .avatar-canvas { opacity: 0; }
 
-/* On tablet/desktop the companion belongs to the second hero grid column rather
-   than being anchored to the bottom edge of the hero. Keep a deliberate visual
-   safe zone below the fixed header: the poster/canvas moves as one unit without
-   scaling the character, so the complete head and face remain visible. */
+/* On tablet/desktop the companion belongs to the second hero grid column. Keep
+   it deliberately smaller than the available column so the complete head and
+   feet remain visible on ordinary desktop-height viewports. Poster and WebGL
+   share this same stage, so the fallback and live avatar keep one composition. */
 @media (min-width: 761px) {
   .hero__content { grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); column-gap: clamp(18px, 3vw, 56px); }
   .hero-avatar {
-    --avatar-desktop-drop: clamp(64px, 8vh, 92px);
+    --avatar-desktop-drop: clamp(42px, 5vh, 64px);
     position: relative;
     grid-column: 2;
     grid-row: 1;
     right: auto;
     bottom: auto;
-    width: 100%;
-    max-width: 700px;
-    height: clamp(520px, 62vw, 700px);
-    margin-inline-end: clamp(18px, 2.5vw, 44px);
+    width: 90%;
+    max-width: 600px;
+    height: clamp(500px, 54vw, 600px);
+    margin-inline-end: clamp(24px, 3vw, 56px);
     align-self: center;
     justify-self: end;
     transform: none;
@@ -54,7 +54,7 @@
   .hero-avatar > .avatar-poster,
   .hero-avatar > .avatar-canvas { translate: 0 var(--avatar-desktop-drop); }
   .avatar-poster { overflow: visible; }
-  .avatar-poster img { object-position: center bottom; }
+  .avatar-poster img { object-fit: contain; object-position: center center; }
 }
 
 /* The motion diagram uses a dedicated close-up companion portrait instead of
@@ -70,9 +70,10 @@
   .hero__content { min-height: 620px; }
   .hero__scene-row { padding-top: 32px; padding-bottom: 104px; }
   .hero-avatar {
-    --avatar-desktop-drop: clamp(52px, 7vh, 68px);
-    max-width: 560px;
-    height: clamp(500px, 62vw, 620px);
+    --avatar-desktop-drop: clamp(38px, 5vh, 54px);
+    width: 94%;
+    max-width: 500px;
+    height: clamp(460px, 58vw, 560px);
     margin-inline-end: 0;
   }
 }
