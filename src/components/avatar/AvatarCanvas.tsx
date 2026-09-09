@@ -35,7 +35,7 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
 
     const fitAvatar = () => {
       if (!vrm) return false;
-      return fitCameraToObject(camera, vrm.scene, 1.12, 0.025) !== null;
+      return fitCameraToObject(camera, vrm.scene) !== null;
     };
 
     try {
