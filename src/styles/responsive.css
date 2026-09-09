@@ -7,7 +7,6 @@
   .nav--mobile a { padding:13px 14px; border-radius:10px; }
   .nav--mobile a:hover { background:var(--surface); }
   .hero__content { grid-template-columns:1fr 1fr; }
-  .hero-avatar { right:-11%; width:67%; }
   .experience-grid { grid-template-columns:1fr 1fr; }
   .presence-layout, .motion-layout { gap:45px; }
   .motion-diagram { padding-right:0; }
@@ -55,14 +54,9 @@
   *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
 }
 
-@media (min-width: 1400px) {
-  .hero-avatar { width: 46%; height: 640px; }
-}
-
 @media (max-width: 1040px) and (min-width: 761px) {
   .container { width: min(100% - 40px, 960px); }
   .hero { min-height: 700px; }
-  .hero-avatar { right: -8%; width: 58%; height: 600px; }
   .hero h1 { font-size: clamp(2.8rem, 6vw, 4rem); }
 }
 
@@ -76,9 +70,6 @@
   .experience-card { min-height: 220px; }
 }
 
-/* Keep the transparent Waiting-standard poster clear of the fixed header.
-   Translate the avatar stage rather than the image itself so the poster's
-   breathing animation and transparency remain unchanged. */
-@media (min-width: 761px) {
-  .hero-avatar { transform: translateY(clamp(48px, 6vh, 72px)); }
-}
+/* Desktop/tablet companion positioning is owned by interactions.css, which is
+   loaded after this file. Keeping hero-avatar geometry in one stylesheet avoids
+   competing transforms that can push the face into the fixed-header crop. */

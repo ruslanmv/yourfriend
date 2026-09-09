@@ -31,11 +31,13 @@
 .hero-avatar:not(.is-live) .avatar-canvas { opacity: 0; }
 
 /* On tablet/desktop the companion belongs to the second hero grid column rather
-   than being anchored to the bottom edge of the hero. The Three.js camera then
-   fits the VRM inside this centered stage using the model's actual bounds. */
+   than being anchored to the bottom edge of the hero. Keep a deliberate visual
+   safe zone below the fixed header: the poster/canvas moves as one unit without
+   scaling the character, so the complete head and face remain visible. */
 @media (min-width: 761px) {
   .hero__content { grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); column-gap: clamp(18px, 3vw, 56px); }
   .hero-avatar {
+    --avatar-desktop-drop: clamp(64px, 8vh, 92px);
     position: relative;
     grid-column: 2;
     grid-row: 1;
@@ -44,10 +46,15 @@
     width: 100%;
     max-width: 700px;
     height: clamp(520px, 62vw, 700px);
+    margin-inline-end: clamp(18px, 2.5vw, 44px);
     align-self: center;
     justify-self: end;
+    transform: none;
   }
-  .avatar-poster img { object-position: center center; }
+  .hero-avatar > .avatar-poster,
+  .hero-avatar > .avatar-canvas { translate: 0 var(--avatar-desktop-drop); }
+  .avatar-poster { overflow: visible; }
+  .avatar-poster img { object-position: center bottom; }
 }
 
 /* The motion diagram uses a dedicated close-up companion portrait instead of
@@ -62,7 +69,12 @@
   .hero__stage { grid-template-rows: minmax(620px, auto) auto; }
   .hero__content { min-height: 620px; }
   .hero__scene-row { padding-top: 32px; padding-bottom: 104px; }
-  .hero-avatar { max-width: 560px; height: clamp(500px, 62vw, 620px); }
+  .hero-avatar {
+    --avatar-desktop-drop: clamp(52px, 7vh, 68px);
+    max-width: 560px;
+    height: clamp(500px, 62vw, 620px);
+    margin-inline-end: 0;
+  }
 }
 
 @media (max-width: 760px) {

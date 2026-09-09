@@ -6,8 +6,8 @@ export function AvatarPoster({ theme, hidden }: { theme: Theme; hidden: boolean 
     <img
       src={avatarConfig.posters[theme]}
       alt=""
-      width="824"
-      height="1830"
+      width="900"
+      height="1200"
       decoding="async"
       fetchPriority="high"
       onError={(event) => {
