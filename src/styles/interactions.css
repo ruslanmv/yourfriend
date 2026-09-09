@@ -54,7 +54,13 @@
   .hero-avatar > .avatar-poster,
   .hero-avatar > .avatar-canvas { translate: 0 var(--avatar-desktop-drop); }
   .avatar-poster { overflow: visible; }
-  .avatar-poster img { object-fit: contain; object-position: center center; }
+  .avatar-poster img {
+    object-fit: contain;
+    object-position: center center;
+    -webkit-mask-image: none;
+    mask-image: none;
+    mask-composite: initial;
+  }
 }
 
 /* The motion diagram uses a dedicated close-up companion portrait instead of
