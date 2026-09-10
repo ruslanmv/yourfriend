@@ -84,11 +84,42 @@
   }
 }
 
+/* Mobile uses normal document flow for the hero copy and avatar. The previous
+   absolute-positioned companion sat behind the lead, buttons and trust line on
+   narrow screens. Stacking the avatar after the copy guarantees that neither
+   the poster nor the live canvas can cover readable UI. */
 @media (max-width: 760px) {
   .hero { min-height: 0; }
   .hero__stage { grid-template-rows: auto auto; min-height: 0; }
-  .hero__content { min-height: 840px; }
-  .hero__scene-row { padding: 32px 0 64px; }
+  .hero__content {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero__copy { width: 100%; }
+  .hero-avatar {
+    position: relative;
+    z-index: 5;
+    right: auto;
+    bottom: auto;
+    width: min(100%, 420px);
+    height: clamp(420px, 118vw, 520px);
+    margin: clamp(24px, 6vw, 42px) auto 0;
+    opacity: 1;
+    align-self: center;
+  }
+  .hero-avatar > .avatar-poster,
+  .hero-avatar > .avatar-canvas { translate: none; }
+  .avatar-poster { overflow: visible; }
+  .avatar-poster img {
+    object-fit: contain;
+    object-position: center top;
+    -webkit-mask-image: none;
+    mask-image: none;
+    mask-composite: initial;
+  }
+  .hero__scene-row { padding: 24px 0 64px; }
   .ambient__controls { position: relative; left: auto; right: auto; bottom: auto; width: 100%; max-width: 100%; }
   .ambient__thumb-row { width: 100%; }
   .ambient__thumbs { flex: 1; min-width: 0; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
