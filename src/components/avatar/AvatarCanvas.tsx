@@ -2,9 +2,12 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin, VRMUtils, type VRM } from '@pixiv/three-vrm';
+import { createVRMAnimationClip, VRMAnimationLoaderPlugin } from '@pixiv/three-vrm-animation';
 import { avatarConfig } from '../../config/avatar';
 import { avatarQuality } from './AvatarQuality';
 import { fitCameraToObject, isObjectMeaningfullyFramed } from './avatarFraming';
+
+type WaitingMotionState = 'loading' | 'ready' | 'fallback';
 
 export default function AvatarCanvas({ active, onReady, onError }: { active: boolean; onReady: () => void; onError: () => void }) {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -16,6 +19,8 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
     if (!mount) return;
     let disposed = false;
     let vrm: VRM | null = null;
+    let mixer: THREE.AnimationMixer | null = null;
+    let waitingMotionState: WaitingMotionState = 'loading';
     let stableFrames = 0;
     let readySent = false;
     let wasActive = false;
@@ -36,6 +41,17 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
     const fitAvatar = () => {
       if (!vrm) return false;
       return fitCameraToObject(camera, vrm.scene) !== null;
+    };
+
+    const useFallbackMotion = () => {
+      waitingMotionState = 'fallback';
+      mixer?.stopAllAction();
+      mixer = null;
+      if (vrm) {
+        vrm.scene.rotation.y = baseRotationY;
+        vrm.scene.position.y = baseY;
+      }
+      resetReadiness();
     };
 
     try {
@@ -84,6 +100,7 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
 
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
+    loader.register((parser) => new VRMAnimationLoaderPlugin(parser));
     loader.load(avatarConfig.model, (gltf) => {
       if (disposed) return;
       vrm = gltf.userData.vrm as VRM;
@@ -103,6 +120,37 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
         return;
       }
       resetReadiness();
+
+      loader.load(
+        avatarConfig.animations.waiting,
+        (animationGltf) => {
+          if (disposed || !vrm) return;
+          try {
+            const vrmAnimation = animationGltf.userData.vrmAnimations?.[0];
+            if (!vrmAnimation) {
+              useFallbackMotion();
+              return;
+            }
+
+            vrm.scene.rotation.y = baseRotationY;
+            vrm.scene.position.y = baseY;
+            const clip = createVRMAnimationClip(vrmAnimation, vrm);
+            mixer?.stopAllAction();
+            mixer = new THREE.AnimationMixer(vrm.scene);
+            const action = mixer.clipAction(clip);
+            action.setLoop(THREE.LoopRepeat, Infinity);
+            action.play();
+            waitingMotionState = 'ready';
+            resetReadiness();
+          } catch {
+            useFallbackMotion();
+          }
+        },
+        undefined,
+        () => {
+          if (!disposed) useFallbackMotion();
+        },
+      );
     }, undefined, () => {
       if (!disposed) {
         resetReadiness();
@@ -133,8 +181,12 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
         const delta = Math.min(clock.getDelta(), 0.1);
         const elapsed = clock.elapsedTime;
         if (vrm) {
-          vrm.scene.rotation.y = baseRotationY + Math.sin(elapsed * 0.22) * 0.018;
-          vrm.scene.position.y = baseY + Math.sin(elapsed * 0.85) * 0.006;
+          if (mixer) {
+            mixer.update(delta);
+          } else if (waitingMotionState === 'fallback') {
+            vrm.scene.rotation.y = baseRotationY + Math.sin(elapsed * 0.22) * 0.018;
+            vrm.scene.position.y = baseY + Math.sin(elapsed * 0.85) * 0.006;
+          }
           vrm.update(delta);
         }
         renderer.render(scene, camera);
@@ -151,7 +203,8 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
       if (!vrm || readySent) return;
       const rect = mount.getBoundingClientRect();
       const canvasReady = rect.width >= 32 && rect.height >= 32 && renderer.domElement.width > 0 && renderer.domElement.height > 0 && vrm.scene.visible;
-      const visibleFrame = canvasReady && isObjectMeaningfullyFramed(camera, vrm.scene, 0.55);
+      const motionReady = waitingMotionState !== 'loading';
+      const visibleFrame = motionReady && canvasReady && isObjectMeaningfullyFramed(camera, vrm.scene, 0.55);
       stableFrames = visibleFrame ? stableFrames + 1 : 0;
       if (stableFrames >= avatarConfig.transition.stableFrames) {
         readySent = true;
@@ -166,6 +219,8 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
       observer.disconnect();
       renderer.domElement.removeEventListener('webglcontextlost', handleContextLost);
       renderer.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
+      mixer?.stopAllAction();
+      if (mixer && vrm) mixer.uncacheRoot(vrm.scene);
       renderer.dispose();
       renderer.domElement.remove();
       vrm?.scene.traverse((object) => {
