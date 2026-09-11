@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ImmersiveAudio } from '../src/components/audio/ImmersiveAudio';
 import {
   ambientTracks,
@@ -11,6 +11,10 @@ import {
 describe('immersive ambient audio', () => {
   beforeEach(() => {
     window.localStorage.clear();
+  });
+
+  afterEach(() => {
+    cleanup();
   });
 
   it('renders a user-gesture gateway, persistent control, and optimized source order', () => {
