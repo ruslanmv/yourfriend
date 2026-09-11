@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ImmersiveAudio } from '../src/components/audio/ImmersiveAudio';
 import {
   ambientTracks,
-  audioBestPractices,
   AUDIO_MUTED_STORAGE_KEY,
   AUDIO_VOLUME,
 } from '../src/config/audio';
@@ -63,8 +62,7 @@ describe('immersive ambient audio', () => {
     expect(screen.getByText('Play music')).toBeInTheDocument();
   });
 
-  it('keeps the playlist and best-practice contract inside the intended calm range', () => {
-    expect(audioBestPractices).toHaveLength(10);
+  it('keeps the playlist inside the intended calm range', () => {
     expect(AUDIO_VOLUME).toBeGreaterThanOrEqual(0.2);
     expect(AUDIO_VOLUME).toBeLessThanOrEqual(0.3);
 

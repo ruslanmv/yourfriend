@@ -1,0 +1,51 @@
+.night-sky-effect {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shooting-star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  opacity: 0;
+  background: rgba(236, 247, 255, .95);
+  box-shadow: 0 0 8px rgba(183, 222, 255, .7), 0 0 18px rgba(127, 185, 255, .34);
+  animation: shootingStar 1.65s cubic-bezier(.2,.65,.25,1) forwards;
+}
+
+.shooting-star::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 1px;
+  width: 112px;
+  height: 1px;
+  transform: translateY(-50%);
+  transform-origin: right center;
+  background: linear-gradient(90deg, transparent, rgba(214, 238, 255, .08) 28%, rgba(232, 246, 255, .78));
+}
+
+.shooting-star--1 { top: 16%; left: 82%; animation-delay: 0s; }
+.shooting-star--2 { top: 30%; left: 91%; animation-delay: .58s; }
+.shooting-star--3 { top: 10%; left: 69%; animation-delay: 1.08s; }
+
+@keyframes shootingStar {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(-24deg) scale(.8);
+  }
+  9% { opacity: .72; }
+  62% { opacity: .52; }
+  100% {
+    opacity: 0;
+    transform: translate3d(-250px, 112px, 0) rotate(-24deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .night-sky-effect { display: none; }
+}
