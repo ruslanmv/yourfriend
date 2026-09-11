@@ -1,5 +1,5 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ImmersiveAudio } from '../src/components/audio/ImmersiveAudio';
 import {
   ambientTracks,
@@ -9,18 +9,26 @@ import {
 } from '../src/config/audio';
 
 describe('immersive ambient audio', () => {
+  let playSpy: ReturnType<typeof vi.spyOn>;
+
   beforeEach(() => {
     window.localStorage.clear();
+    playSpy = vi.spyOn(window.HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined);
+    vi.spyOn(window.HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
     cleanup();
+    vi.restoreAllMocks();
   });
 
-  it('renders a user-gesture gateway, persistent control, and optimized source order', () => {
+  it('keeps the entry gateway minimal and silent by default', () => {
     const { container } = render(<ImmersiveAudio/>);
 
-    expect(screen.getByRole('button', { name: 'Begin Journey' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Begin your journey' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Enter' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Continue without sound' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/A quiet 60–70 BPM soundscape/i)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Toggle background music' })).toBeInTheDocument();
     expect(screen.getByText('Ambient Ocean · 65 BPM')).toBeInTheDocument();
 
@@ -32,17 +40,29 @@ describe('immersive ambient audio', () => {
     expect(sources[0]).toHaveAttribute('src', expect.stringContaining('track1-ambient-ocean-65bpm.ogg'));
     expect(sources[1]).toHaveAttribute('type', 'audio/mpeg');
     expect(sources[1]).toHaveAttribute('src', expect.stringContaining('track1-ambient-ocean-65bpm.mp3'));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Enter' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(playSpy).not.toHaveBeenCalled();
+    expect(screen.getByText('Play music')).toBeInTheDocument();
   });
 
-  it('persists a muted choice and lets the visitor cycle tracks without starting playback', () => {
+  it('starts audio only from the persistent play control and preserves the mute preference', async () => {
     render(<ImmersiveAudio/>);
 
-    fireEvent.click(screen.getByRole('button', { name: 'Continue without sound' }));
-    expect(window.localStorage.getItem(AUDIO_MUTED_STORAGE_KEY)).toBe('true');
-    expect(screen.getByText('Muted')).toBeInTheDocument();
-
+    fireEvent.click(screen.getByRole('button', { name: 'Enter' }));
     fireEvent.click(screen.getByRole('button', { name: 'Play next ambient track' }));
     expect(screen.getByText('Lo-Fi Chill · 70 BPM')).toBeInTheDocument();
+    expect(playSpy).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle background music' }));
+    await waitFor(() => expect(playSpy).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.getByText('Playing')).toBeInTheDocument());
+    expect(window.localStorage.getItem(AUDIO_MUTED_STORAGE_KEY)).toBe('false');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Toggle background music' }));
+    expect(window.localStorage.getItem(AUDIO_MUTED_STORAGE_KEY)).toBe('true');
+    expect(screen.getByText('Play music')).toBeInTheDocument();
   });
 
   it('keeps the playlist and best-practice contract inside the intended calm range', () => {
