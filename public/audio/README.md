@@ -1,15 +1,14 @@
 # Ambient audio assets
 
-Place the production audio files in this directory using these exact filenames:
+The production player currently uses these deployed MP3 files:
 
-- `track1-ambient-ocean-65bpm.ogg`
-- `track1-ambient-ocean-65bpm.mp3`
-- `track2-lofi-chill-70bpm.ogg`
+- `track1-ambient-ocean-65bpm.mp3` — default track
 - `track2-lofi-chill-70bpm.mp3`
-- `track3-ethereal-meditation-60bpm.ogg`
 - `track3-ethereal-meditation-60bpm.mp3`
 
-The UI intentionally references OGG first and MP3 second as a compatibility fallback. Keep the files reasonably compressed for web delivery and test seamless looping before publishing.
+The UI intentionally references only files that are present in production. If alternate OGG/WebM versions are added later, update the player and tests at the same time so browsers never try a missing source first.
+
+Keep the files reasonably compressed for web delivery and test seamless looping before publishing.
 
 ## Licensing
 
