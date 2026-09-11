@@ -33,7 +33,7 @@ export const ambientTracks: readonly AmbientTrack[] = [
 ];
 
 export const audioBestPractices = [
-  { title: 'Immersion gateway', detail: 'Audio begins only after an intentional user gesture.' },
+  { title: 'Immersion gateway', detail: 'Entry stays focused on the journey; music remains off until the visitor explicitly presses play.' },
   { title: 'Prominent controls', detail: 'A persistent sound control stays within easy reach.' },
   { title: 'Low volume', detail: 'Ambient playback settles at a calm 22% volume.' },
   { title: 'Seamless looping', detail: 'Each selected ambience loops without an abrupt stop.' },
