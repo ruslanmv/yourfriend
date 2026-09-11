@@ -70,13 +70,12 @@ function fadeVolume(audio: HTMLAudioElement, target: number, duration: number, c
   });
 }
 
-function SpeakerIcon({ muted }: { muted: boolean }) {
-  return muted ? (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M5 9v6h4l5 4V5L9 9H5Z" fill="currentColor"/>
-      <path d="m17 9 5 5m0-5-5 5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/>
-    </svg>
-  ) : (
+function AudioStateIcon({ playing }: { playing: boolean }) {
+  if (!playing) {
+    return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7 8 5-8 5V7Z" fill="currentColor"/></svg>;
+  }
+
+  return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M5 9v6h4l5 4V5L9 9H5Z" fill="currentColor"/>
       <path d="M17 8.2a5 5 0 0 1 0 7.6M19.6 5.8a8.4 8.4 0 0 1 0 12.4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
@@ -90,7 +89,6 @@ function NextIcon() {
 
 export function ImmersiveAudio() {
   const [gatewayOpen, setGatewayOpen] = useState(true);
-  const [mutedPreference, setMutedPreference] = useState(readMutedPreference);
   const [trackIndex, setTrackIndex] = useState(readTrackIndex);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioUnavailable, setAudioUnavailable] = useState(false);
@@ -165,7 +163,6 @@ export function ImmersiveAudio() {
       await audio.play();
       if (actionId !== actionIdRef.current) return;
       setAudioUnavailable(false);
-      setMutedPreference(false);
       persist(AUDIO_MUTED_STORAGE_KEY, 'false');
       setIsPlaying(true);
       void fadeVolume(audio, AUDIO_VOLUME, AUDIO_FADE_IN_MS, fadeControllerRef.current);
@@ -181,7 +178,6 @@ export function ImmersiveAudio() {
     if (!audio) return;
 
     const actionId = ++actionIdRef.current;
-    setMutedPreference(true);
     persist(AUDIO_MUTED_STORAGE_KEY, 'true');
     setIsPlaying(false);
     await fadeVolume(audio, 0, AUDIO_FADE_OUT_MS, fadeControllerRef.current);
@@ -193,22 +189,6 @@ export function ImmersiveAudio() {
 
   function beginJourney() {
     setGatewayOpen(false);
-    if (!mutedPreference) void playAudio();
-  }
-
-  function continueMuted() {
-    ++actionIdRef.current;
-    stopFade(fadeControllerRef.current);
-    const audio = audioRef.current;
-    if (audio) {
-      audio.pause();
-      audio.volume = 0;
-      audio.muted = true;
-    }
-    setMutedPreference(true);
-    setIsPlaying(false);
-    persist(AUDIO_MUTED_STORAGE_KEY, 'true');
-    setGatewayOpen(false);
   }
 
   function toggleAudio() {
@@ -216,6 +196,7 @@ export function ImmersiveAudio() {
       void pauseAudio();
       return;
     }
+
     setGatewayOpen(false);
     void playAudio();
   }
@@ -231,7 +212,7 @@ export function ImmersiveAudio() {
     persist(AUDIO_TRACK_STORAGE_KEY, String(nextIndex));
   }
 
-  const status = audioUnavailable ? 'Add audio files' : isPlaying ? 'Playing' : mutedPreference ? 'Muted' : 'Ready';
+  const status = audioUnavailable ? 'Audio unavailable' : isPlaying ? 'Playing' : 'Play music';
 
   return <>
     <audio
@@ -247,19 +228,17 @@ export function ImmersiveAudio() {
       <source src={track.mp3} type="audio/mpeg"/>
     </audio>
 
-    {gatewayOpen && <div className="immersion-gateway" role="dialog" aria-modal="true" aria-labelledby="immersion-title" aria-describedby="immersion-copy">
+    {gatewayOpen && <div className="immersion-gateway" role="dialog" aria-modal="true" aria-labelledby="immersion-title">
       <div className="immersion-gateway__panel">
-        <div className="immersion-gateway__eyebrow"><span aria-hidden="true">✦</span> Optional ambient audio</div>
+        <div className="immersion-gateway__eyebrow"><span aria-hidden="true">✦</span> Your Friend</div>
         <h2 id="immersion-title">Begin your journey</h2>
-        <p id="immersion-copy">A quiet 60–70 BPM soundscape can accompany the experience. Audio starts only after your choice and never exceeds 22% volume.</p>
-        <button ref={beginButtonRef} className="immersion-gateway__begin" type="button" onClick={beginJourney}>Begin Journey</button>
-        <button className="immersion-gateway__quiet" type="button" onClick={continueMuted}>Continue without sound</button>
+        <button ref={beginButtonRef} className="immersion-gateway__begin" type="button" onClick={beginJourney}>Enter</button>
       </div>
     </div>}
 
     <div className="audio-dock" aria-live="polite">
       <button className="audio-toggle" type="button" aria-label="Toggle background music" aria-pressed={isPlaying} onClick={toggleAudio}>
-        <span className="audio-toggle__icon"><SpeakerIcon muted={!isPlaying}/></span>
+        <span className="audio-toggle__icon"><AudioStateIcon playing={isPlaying}/></span>
         <span className="audio-toggle__meta">
           <span className="audio-toggle__status">{status}</span>
           <span className="audio-toggle__track">{track.name} · {track.bpm} BPM</span>
