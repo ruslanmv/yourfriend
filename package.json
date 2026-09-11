@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@pixiv/three-vrm": "^3.4.4",
-    "@pixiv/three-vrm-animation": "^3.5.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.8.2",
