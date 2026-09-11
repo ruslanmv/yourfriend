@@ -2,10 +2,10 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin, VRMUtils, type VRM } from '@pixiv/three-vrm';
-import { createVRMAnimationClip, VRMAnimationLoaderPlugin } from '@pixiv/three-vrm-animation';
 import { avatarConfig } from '../../config/avatar';
 import { avatarQuality } from './AvatarQuality';
 import { fitCameraToObject, isObjectMeaningfullyFramed } from './avatarFraming';
+import { createWaitingAnimationClip } from './vrmaWaitingAnimation';
 
 type WaitingMotionState = 'loading' | 'ready' | 'fallback';
 
@@ -98,10 +98,9 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
     };
     const observer = new ResizeObserver(resize); observer.observe(mount); resize();
 
-    const loader = new GLTFLoader();
-    loader.register((parser) => new VRMLoaderPlugin(parser));
-    loader.register((parser) => new VRMAnimationLoaderPlugin(parser));
-    loader.load(avatarConfig.model, (gltf) => {
+    const modelLoader = new GLTFLoader();
+    modelLoader.register((parser) => new VRMLoaderPlugin(parser));
+    modelLoader.load(avatarConfig.model, (gltf) => {
       if (disposed) return;
       vrm = gltf.userData.vrm as VRM;
       if (!vrm) { onError(); return; }
@@ -121,20 +120,21 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
       }
       resetReadiness();
 
-      loader.load(
+      const animationLoader = new GLTFLoader();
+      animationLoader.load(
         avatarConfig.animations.waiting,
-        (animationGltf) => {
+        async (animationGltf) => {
           if (disposed || !vrm) return;
           try {
-            const vrmAnimation = animationGltf.userData.vrmAnimations?.[0];
-            if (!vrmAnimation) {
+            const clip = await createWaitingAnimationClip(animationGltf, vrm);
+            if (disposed || !vrm) return;
+            if (!clip) {
               useFallbackMotion();
               return;
             }
 
             vrm.scene.rotation.y = baseRotationY;
             vrm.scene.position.y = baseY;
-            const clip = createVRMAnimationClip(vrmAnimation, vrm);
             mixer?.stopAllAction();
             mixer = new THREE.AnimationMixer(vrm.scene);
             const action = mixer.clipAction(clip);
