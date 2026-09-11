@@ -1,5 +1,6 @@
 import type { Theme } from '../../types';
 import { site } from '../../config/site';
+import { audioBestPractices } from '../../config/audio';
 import { AmbientSlider } from '../ambient/AmbientSlider';
 import { HeroAvatar } from '../avatar/HeroAvatar';
 
@@ -16,6 +17,12 @@ export function Hero({ theme }: { theme: Theme }) {
             <a className="button button--primary" href={site.repoUrl} target="_blank" rel="noopener noreferrer">View source <span aria-hidden="true">↗</span></a>
             <a className="button button--secondary" href={site.liveDemoUrl} target="_blank" rel="noopener noreferrer"><span aria-hidden="true">▶</span> Live demo</a>
           </div>
+          <details className="audio-practices">
+            <summary><span>Immersive Audio Best Practices</span><small>10 rules</small></summary>
+            <ol>
+              {audioBestPractices.map((practice) => <li key={practice.title}><strong>{practice.title}</strong><span>{practice.detail}</span></li>)}
+            </ol>
+          </details>
           <p className="hero__trust">◌&nbsp; Clone it, run it locally, or deploy your own companion. No sales gate.</p>
         </div>
         <HeroAvatar theme={theme}/>

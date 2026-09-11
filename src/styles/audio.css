@@ -1,0 +1,218 @@
+.ambient-audio { display: none; }
+
+.immersion-gateway {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 34%),
+    color-mix(in srgb, #020914 68%, transparent);
+  backdrop-filter: blur(16px) saturate(118%);
+}
+
+.immersion-gateway__panel {
+  width: min(430px, 100%);
+  padding: 34px 32px 28px;
+  text-align: center;
+  border: 1px solid color-mix(in srgb, white 16%, var(--surface-border));
+  border-radius: 26px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-strong) 84%, transparent), color-mix(in srgb, var(--surface) 72%, transparent));
+  box-shadow: 0 30px 90px rgba(0, 7, 22, .38), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.immersion-gateway__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  color: var(--text-soft);
+  font-size: .7rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.immersion-gateway__eyebrow span { color: var(--accent); }
+.immersion-gateway h2 { margin: 0 0 12px; font-size: clamp(2.2rem, 6vw, 3.2rem); }
+.immersion-gateway p { margin: 0 auto 24px; max-width: 350px; font-size: .92rem; color: var(--text-soft); }
+
+.immersion-gateway__begin,
+.immersion-gateway__quiet {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.immersion-gateway__begin {
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, white);
+  color: white;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 76%, white), var(--accent));
+  box-shadow: 0 12px 34px color-mix(in srgb, var(--accent) 24%, transparent);
+}
+
+.immersion-gateway__quiet {
+  margin-top: 9px;
+  border: 1px solid transparent;
+  color: var(--text-soft);
+  background: transparent;
+}
+
+.immersion-gateway__begin:hover,
+.immersion-gateway__quiet:hover { transform: translateY(-1px); }
+.immersion-gateway__begin:focus-visible,
+.immersion-gateway__quiet:focus-visible,
+.audio-toggle:focus-visible,
+.audio-next:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.audio-dock {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  min-height: 54px;
+  max-width: min(390px, calc(100vw - 48px));
+  padding: 5px;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--surface-border));
+  border-radius: 999px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface-strong) 74%, transparent);
+  backdrop-filter: blur(18px) saturate(130%);
+  box-shadow: 0 12px 38px rgba(4, 18, 46, .18), 0 0 28px color-mix(in srgb, var(--accent) 14%, transparent), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.audio-toggle {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px 5px 5px;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.audio-toggle__icon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  border-radius: 50%;
+  color: color-mix(in srgb, var(--accent) 84%, white);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  box-shadow: inset 0 0 20px color-mix(in srgb, var(--accent) 7%, transparent);
+}
+
+.audio-toggle__icon svg,
+.audio-next svg { width: 18px; height: 18px; }
+
+.audio-toggle__meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.audio-toggle__status {
+  font-size: .72rem;
+  font-weight: 650;
+  letter-spacing: .035em;
+  color: var(--text);
+}
+
+.audio-toggle__track {
+  max-width: 220px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: .66rem;
+  color: var(--text-soft);
+}
+
+.audio-next {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-left: 1px solid var(--surface-border);
+  color: var(--text-soft);
+  background: transparent;
+  cursor: pointer;
+  transition: color .2s ease, transform .2s ease;
+}
+
+.audio-next:hover { color: var(--accent); transform: translateX(1px); }
+
+.audio-practices {
+  width: min(540px, 100%);
+  margin-top: 18px;
+  border-top: 1px solid color-mix(in srgb, var(--surface-border) 78%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--surface-border) 62%, transparent);
+  color: var(--text-soft);
+}
+
+.audio-practices summary {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  list-style: none;
+  cursor: pointer;
+  font-size: .74rem;
+  letter-spacing: .025em;
+}
+
+.audio-practices summary::-webkit-details-marker { display: none; }
+.audio-practices summary::after { content: '+'; color: var(--accent); font-size: 1rem; margin-left: auto; }
+.audio-practices[open] summary::after { content: '–'; }
+.audio-practices summary small { font-size: .64rem; color: var(--muted); white-space: nowrap; }
+
+.audio-practices ol {
+  max-height: 230px;
+  margin: 0 0 14px;
+  padding: 4px 8px 3px 20px;
+  columns: 2;
+  column-gap: 28px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.audio-practices li {
+  break-inside: avoid;
+  margin: 0 0 11px;
+  padding-left: 3px;
+  font-size: .68rem;
+  line-height: 1.35;
+}
+
+.audio-practices li strong,
+.audio-practices li span { display: block; }
+.audio-practices li strong { margin-bottom: 2px; color: var(--text); font-size: .7rem; font-weight: 650; }
+
+@media (max-width: 760px) {
+  .immersion-gateway { padding: 16px; }
+  .immersion-gateway__panel { padding: 28px 22px 22px; border-radius: 22px; }
+  .audio-dock { right: 12px; bottom: 12px; max-width: calc(100vw - 24px); }
+  .audio-toggle__track { display: none; }
+  .audio-toggle__meta { padding-right: 2px; }
+  .audio-practices { width: min(100%, 440px); }
+  .audio-practices ol { max-height: 180px; columns: 1; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .immersion-gateway,
+  .audio-dock { backdrop-filter: none; }
+  .audio-dock { background: var(--surface-strong); }
+}
