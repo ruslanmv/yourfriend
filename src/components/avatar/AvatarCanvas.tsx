@@ -43,7 +43,7 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
       return fitCameraToObject(camera, vrm.scene) !== null;
     };
 
-    const useFallbackMotion = () => {
+    const activateFallbackMotion = () => {
       waitingMotionState = 'fallback';
       mixer?.stopAllAction();
       mixer = null;
@@ -129,7 +129,7 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
             const clip = await createWaitingAnimationClip(animationGltf, vrm);
             if (disposed || !vrm) return;
             if (!clip) {
-              useFallbackMotion();
+              activateFallbackMotion();
               return;
             }
 
@@ -143,12 +143,12 @@ export default function AvatarCanvas({ active, onReady, onError }: { active: boo
             waitingMotionState = 'ready';
             resetReadiness();
           } catch {
-            useFallbackMotion();
+            activateFallbackMotion();
           }
         },
         undefined,
         () => {
-          if (!disposed) useFallbackMotion();
+          if (!disposed) activateFallbackMotion();
         },
       );
     }, undefined, () => {
