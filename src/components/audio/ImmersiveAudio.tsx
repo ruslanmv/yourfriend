@@ -4,7 +4,6 @@ import {
   AUDIO_FADE_IN_MS,
   AUDIO_FADE_OUT_MS,
   AUDIO_MUTED_STORAGE_KEY,
-  AUDIO_TRACK_STORAGE_KEY,
   AUDIO_VOLUME,
 } from '../../config/audio';
 
@@ -12,23 +11,6 @@ type FadeController = {
   frame: number | null;
   resolve: (() => void) | null;
 };
-
-function readMutedPreference() {
-  try {
-    return window.localStorage.getItem(AUDIO_MUTED_STORAGE_KEY) === 'true';
-  } catch {
-    return false;
-  }
-}
-
-function readTrackIndex() {
-  try {
-    const stored = Number.parseInt(window.localStorage.getItem(AUDIO_TRACK_STORAGE_KEY) ?? '0', 10);
-    return Number.isInteger(stored) && stored >= 0 && stored < ambientTracks.length ? stored : 0;
-  } catch {
-    return 0;
-  }
-}
 
 function persist(key: string, value: string) {
   try {
@@ -89,8 +71,9 @@ function NextIcon() {
 
 export function ImmersiveAudio() {
   const [gatewayOpen, setGatewayOpen] = useState(true);
-  const [trackIndex, setTrackIndex] = useState(readTrackIndex);
+  const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
   const [audioUnavailable, setAudioUnavailable] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const beginButtonRef = useRef<HTMLButtonElement>(null);
@@ -104,7 +87,7 @@ export function ImmersiveAudio() {
     const audio = audioRef.current;
     if (audio) {
       audio.volume = 0;
-      audio.muted = readMutedPreference();
+      audio.muted = true;
     }
 
     return () => stopFade(fadeControllerRef.current);
@@ -129,7 +112,6 @@ export function ImmersiveAudio() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    audio.dataset.trackId = ambientTracks[trackIndex].id;
     audio.load();
 
     if (!resumeAfterTrackChangeRef.current) return;
@@ -137,14 +119,17 @@ export function ImmersiveAudio() {
     const actionId = ++actionIdRef.current;
     audio.muted = false;
     audio.volume = 0;
+    setIsStarting(true);
 
     void audio.play().then(() => {
       if (actionId !== actionIdRef.current) return;
       setAudioUnavailable(false);
+      setIsStarting(false);
       setIsPlaying(true);
       void fadeVolume(audio, AUDIO_VOLUME, AUDIO_FADE_IN_MS, fadeControllerRef.current);
     }).catch(() => {
       if (actionId !== actionIdRef.current) return;
+      setIsStarting(false);
       setIsPlaying(false);
       setAudioUnavailable(true);
     });
@@ -156,18 +141,22 @@ export function ImmersiveAudio() {
 
     const actionId = ++actionIdRef.current;
     stopFade(fadeControllerRef.current);
+    setAudioUnavailable(false);
+    setIsStarting(true);
     audio.muted = false;
     audio.volume = 0;
 
     try {
       await audio.play();
       if (actionId !== actionIdRef.current) return;
+      setIsStarting(false);
       setAudioUnavailable(false);
       persist(AUDIO_MUTED_STORAGE_KEY, 'false');
       setIsPlaying(true);
       void fadeVolume(audio, AUDIO_VOLUME, AUDIO_FADE_IN_MS, fadeControllerRef.current);
     } catch {
       if (actionId !== actionIdRef.current) return;
+      setIsStarting(false);
       setIsPlaying(false);
       setAudioUnavailable(true);
     }
@@ -178,6 +167,7 @@ export function ImmersiveAudio() {
     if (!audio) return;
 
     const actionId = ++actionIdRef.current;
+    setIsStarting(false);
     persist(AUDIO_MUTED_STORAGE_KEY, 'true');
     setIsPlaying(false);
     await fadeVolume(audio, 0, AUDIO_FADE_OUT_MS, fadeControllerRef.current);
@@ -189,6 +179,7 @@ export function ImmersiveAudio() {
 
   function beginJourney() {
     setGatewayOpen(false);
+    void playAudio();
   }
 
   function toggleAudio() {
@@ -206,33 +197,36 @@ export function ImmersiveAudio() {
     resumeAfterTrackChangeRef.current = isPlaying;
     ++actionIdRef.current;
     stopFade(fadeControllerRef.current);
+    setIsStarting(false);
     setIsPlaying(false);
     setAudioUnavailable(false);
     setTrackIndex(nextIndex);
-    persist(AUDIO_TRACK_STORAGE_KEY, String(nextIndex));
   }
 
-  const status = audioUnavailable ? 'Audio unavailable' : isPlaying ? 'Playing' : 'Play music';
+  const status = audioUnavailable ? 'Retry music' : isStarting ? 'Starting…' : isPlaying ? 'Playing' : 'Play music';
 
   return <>
     <audio
       ref={audioRef}
       className="ambient-audio"
+      src={track.mp3}
       loop
-      preload="none"
+      preload="metadata"
       onPlay={() => setIsPlaying(true)}
       onPause={() => setIsPlaying(false)}
-      onError={() => setAudioUnavailable(true)}
-    >
-      <source src={track.ogg} type="audio/ogg"/>
-      <source src={track.mp3} type="audio/mpeg"/>
-    </audio>
+      onCanPlay={() => setAudioUnavailable(false)}
+      onError={() => {
+        setIsStarting(false);
+        setIsPlaying(false);
+        setAudioUnavailable(true);
+      }}
+    />
 
     {gatewayOpen && <div className="immersion-gateway" role="dialog" aria-modal="true" aria-labelledby="immersion-title">
       <div className="immersion-gateway__panel">
         <div className="immersion-gateway__eyebrow"><span aria-hidden="true">✦</span> Your Friend</div>
         <h2 id="immersion-title">Begin your journey</h2>
-        <button ref={beginButtonRef} className="immersion-gateway__begin" type="button" onClick={beginJourney}>Enter</button>
+        <button ref={beginButtonRef} className="immersion-gateway__begin" type="button" onClick={beginJourney}>Begin Journey</button>
       </div>
     </div>}
 
