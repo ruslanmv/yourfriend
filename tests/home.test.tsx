@@ -22,6 +22,7 @@ describe('Open-source showcase content', () => {
     expect(controls).toBeInTheDocument();
     expect(copy).not.toContainElement(controls as HTMLElement);
     expect(sceneRow).toContainElement(controls as HTMLElement);
+    expect(screen.queryByText('Immersive Audio Best Practices')).not.toBeInTheDocument();
     expect(Boolean(copy && sceneRow && (copy.compareDocumentPosition(sceneRow) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
   });
 });
