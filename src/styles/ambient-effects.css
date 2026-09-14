@@ -49,3 +49,70 @@
 @media (prefers-reduced-motion: reduce) {
   .night-sky-effect { display: none; }
 }
+
+/* Development calibration overlay. Only ever mounted behind ?heroCalibration=1 — see
+   HeroCalibrationOverlay.tsx — so these rules are inert in normal use. */
+.hero-calibration {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  font: 600 11px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.hero-calibration__zone {
+  position: absolute;
+  border: 1px dashed rgba(255, 255, 255, .55);
+}
+.hero-calibration__zone > span {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, .6);
+  color: #fff;
+}
+.hero-calibration__zone--copy { border-color: #4fd1ff; background: rgba(79, 209, 255, .07); }
+.hero-calibration__zone--corridor { border-color: #ffd34f; background: rgba(255, 211, 79, .07); }
+.hero-calibration__zone--control { border-color: #ff6b8b; background: rgba(255, 107, 139, .09); }
+
+.hero-calibration__line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  border-top: 1px solid currentColor;
+}
+.hero-calibration__line > span {
+  position: absolute;
+  top: 2px;
+  right: 6px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, .68);
+  color: currentColor;
+}
+.hero-calibration__line--head { color: #8fe388; }
+.hero-calibration__line--eye { color: #ffd34f; }
+.hero-calibration__line--feet { color: #ff6b8b; }
+.hero-calibration__line--plate { color: #4fd1ff; }
+.hero-calibration__line--want { color: #c792ea; border-top-style: dashed; }
+
+.hero-calibration__axis {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-left: 1px solid rgba(255, 107, 139, .8);
+}
+
+.hero-calibration__readout {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  max-width: min(520px, calc(100% - 24px));
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, .78);
+  color: #f2f6ff;
+  line-height: 1.5;
+}

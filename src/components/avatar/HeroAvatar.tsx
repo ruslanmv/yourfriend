@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState, type CSSPrope
 import { avatarConfig } from '../../config/avatar';
 import type { Theme } from '../../types';
 import { AvatarPoster } from './AvatarPoster';
+import { posterTransformStyle } from './posterAlignment';
 import { useAvatarVisibility } from './useAvatarVisibility';
 import { useLiveAvatarEligibility } from './useLiveAvatarEligibility';
 
@@ -66,7 +67,12 @@ export function HeroAvatar({ theme }: { theme: Theme }) {
 
   useEffect(() => () => clearReadyTimer(), [clearReadyTimer]);
 
-  const style = { '--avatar-transition-ms': `${avatarConfig.transition.posterToLive}ms` } as CSSProperties;
+  // The poster is scaled and nudged to land exactly where the live camera will put her, so the
+  // crossfade is a change of medium rather than a jump in size and position. See posterAlignment.ts.
+  const style = {
+    '--avatar-transition-ms': `${avatarConfig.transition.posterToLive}ms`,
+    ...posterTransformStyle(),
+  } as CSSProperties;
 
   return <div ref={ref} className={`hero-avatar${liveReady ? ' is-live' : ''}`} data-live-state={liveReady ? 'live' : 'poster'} style={style}>
     <AvatarPoster theme={theme} hidden={liveReady}/>

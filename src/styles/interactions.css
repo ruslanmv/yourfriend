@@ -130,3 +130,38 @@
   .motion-portrait { width: 132px; align-self: center; }
   .motion-sources { justify-content: center; align-self: stretch; }
 }
+
+/* The scene plate is sized and positioned by AmbientSlider from the measured hero box, so the
+   shorthand must not re-assert `cover` here. `background-repeat` still matters: the plate is
+   deliberately overscanned past the box (see plateFit.ts) and a repeat would tile the seam into
+   view at the extremes. */
+.ambient__layer { background-size: auto 100%; background-repeat: no-repeat; background-position: 50% 50%; }
+
+/* The grounding cue. Positioned by ContactShadow at the measured feet row for the current hero
+   width; only the size, the blur and the fade live here. Height is a fraction of the width so the
+   ellipse keeps its shape as the hero changes size. */
+.hero__contact-shadow {
+  position: absolute;
+  z-index: 4;
+  aspect-ratio: 3.4;
+  translate: -50% -62%;
+  filter: blur(10px);
+  opacity: 0;
+  transition: opacity 700ms ease, background 900ms ease;
+  pointer-events: none;
+}
+.hero__contact-shadow.is-visible { opacity: 1; }
+
+/* Poster and live avatar share one framing. The custom properties come from posterAlignment.ts,
+   which derives them from the poster's alpha bounds and the camera's padding rather than from a
+   number typed in here; the fallbacks keep the poster untransformed if it is ever rendered outside
+   HeroAvatar. */
+.avatar-poster img {
+  transform: scale(var(--poster-align-scale, 1)) translateY(var(--poster-align-shift, 0%));
+  transform-origin: 50% 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The shadow does not move, so it stays; only its crossfade is dropped. */
+  .hero__contact-shadow { transition: none; }
+}

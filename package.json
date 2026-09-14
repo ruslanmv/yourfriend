@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "prepare:pages": "npm test && npm run lint && npm run build",
-    "deploy:pages": "npm run prepare:pages && node scripts/deploy-pages.mjs"
+    "deploy:pages": "npm run prepare:pages && node scripts/deploy-pages.mjs",
+    "export:camera-contract": "vite-node tools/export-camera-contract.ts"
   },
   "dependencies": {
     "@pixiv/three-vrm": "^3.4.4",

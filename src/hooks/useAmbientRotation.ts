@@ -1,7 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AmbientScene } from '../types';
 
-export function useAmbientRotation(scenes: AmbientScene[], disabled = false) {
+export interface AmbientRotation {
+  /** Index of the scene on screen. */
+  index: number;
+  /** True while a manual choice is holding the rotation. */
+  paused: boolean;
+  /** Show a scene; `fromUser` also pauses the rotation for a while. */
+  goTo: (next: number, fromUser?: boolean) => void;
+}
+
+export function useAmbientRotation(scenes: AmbientScene[], disabled = false): AmbientRotation {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const interactionTimer = useRef<number | null>(null);
