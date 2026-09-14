@@ -153,25 +153,58 @@ Ambient environments remain independent of the companion layer. The character do
 
 Configuration lives in [`src/config/ambientScenes.ts`](src/config/ambientScenes.ts). Runtime assets live below `public/ambient/light/` and `public/ambient/dark/`; source and art-direction references remain preserved under `docs/reference-images/`.
 
+### Hero composition
+
+<p align="center">
+  <img src="docs/readme/hero-composition.webp" width="100%" alt="The same hero before and after: on the left the painted horizon lands on the companion's feet; on the right it sits at her thigh with water in front of her and a soft contact shadow beneath" />
+</p>
+
+A scene is no longer dropped in with a centred `cover` crop. Each plate declares
+where its ground or horizon is painted, and the page fits it against a measured
+contract so that row lands where the companion actually stands — at every one of
+the nineteen viewport widths the hero was measured at.
+
+Full detail, including how to regenerate plates that fit, is in
+[`docs/HERO_COMPOSITION.md`](docs/HERO_COMPOSITION.md). Open any page with
+`?heroCalibration=1` to see the contract drawn over the live layout.
+
 ### Add an ambient scene
 
 1. Export paired, environment-only light and dark images as optimized WebP or AVIF.
-2. Place them in `public/ambient/light/` and `public/ambient/dark/`.
+2. Place them in `public/ambient/light/` and `public/ambient/dark/`, and a 156x96 thumbnail of each in `public/ambient/thumbs/`.
 3. Add a matching entry to `ambientScenes`:
 
 ```ts
 {
   id: 'new-scene',
   label: 'New scene',
-  lightImage: asset('ambient/light/new-scene.webp'),
-  darkImage: asset('ambient/dark/new-scene.webp'),
+  description: 'What the place is, for the scene button',
+  plates: {
+    light: {
+      src: asset('ambient/light/new-scene.webp'),
+      aspect: 1920 / 1080,
+      // Where its ground is painted, and where that row must land. Omit the
+      // anchor entirely for a plate with neither ground nor a usable horizon.
+      anchor: { plateY: 0.74, heroY: 'feet' },
+    },
+    dark: { src: asset('ambient/dark/new-scene.webp'), aspect: 1920 / 1080 },
+    // Optional; the landscape plate stands in for the stacked mobile hero without one.
+    lightPortrait: { src: asset('ambient/portrait/new-scene.webp'), aspect: 1080 / 1920 },
+  },
+  thumbs: {
+    light: asset('ambient/thumbs/light-new-scene.webp'),
+    dark: asset('ambient/thumbs/dark-new-scene.webp'),
+  },
   duration: 26000,
   transitionDuration: 3600,
   focalPoint: 'center',
+  // 'rich' stands the decorative shooting stars down over a sky that already has detail.
+  skyDetail: 'plain',
+  contactShadow: 'rgba(24, 48, 82, 0.38)',
 }
 ```
 
-4. Verify light/dark contrast, mobile cropping, reduced motion, and the thumbnail selector.
+4. Verify light/dark contrast, mobile cropping, reduced motion, and the thumbnail selector — and check the anchor with `?heroCalibration=1`.
 
 Do not bake characters, logos, interface controls, or text into rotating environment assets.
 
